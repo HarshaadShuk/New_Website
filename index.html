@@ -868,6 +868,7 @@ p{margin:0 0 1em; text-wrap:pretty}
 .st-icon:hover{background:var(--st-panel); border-color:var(--st-rule); color:var(--st-ink)}
 .st-icon svg{width:1rem; height:1rem}
 .st-icon{white-space:nowrap; font-size:.8rem}
+.st-icon:disabled{opacity:.3; pointer-events:none}
 .st-icon[aria-pressed="true"]{background:var(--st-accent-soft); color:var(--st-accent)}
 .st-card{background:var(--st-panel); border:1px solid var(--st-rule); border-radius:12px; padding:1.2rem 1.25rem}
 .st-card h3{font-size:.86rem; font-weight:600; margin:0 0 .8rem; font-family:inherit; letter-spacing:-.005em}
@@ -1125,6 +1126,13 @@ kbd.k{font-family:"IBM Plex Mono", monospace; font-size:.7rem; border:1px solid 
 .watch-hd .bimg{border-radius:4px; box-shadow:0 14px 24px -16px rgba(0,0,0,.45)}
 [data-theme="swiss"] .bcard,[data-theme="archive"] .bcard,[data-theme="modernist"] .bcard,[data-theme="atelier"] .bcard,[data-theme="monograph"] .bcard{border-radius:0}
 [data-theme="terminal"] .props,[data-theme="terminal"] .group-hd{font-family:var(--f-mono)}
+
+/* ---------- Header log in button ---------- */
+.login-btn{font-family:var(--f-sans); font-size:.8rem; font-weight:500; line-height:1; padding:.55rem .95rem; border:1px solid var(--rule-strong); border-radius:999px; color:var(--ink); text-decoration:none; white-space:nowrap; margin-left:.25rem; transition:background-color .2s, color .2s, border-color .2s}
+.login-btn:hover{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+[data-theme="swiss"] .login-btn,[data-theme="archive"] .login-btn,[data-theme="modernist"] .login-btn{border-radius:0}
+[data-theme="terminal"] .login-btn{font-family:var(--f-mono); border-radius:4px}
+@media (max-width:600px){ .hdr-actions .login-btn{display:none} .hdr{gap:var(--s3)} .brand{min-width:0; overflow:hidden; text-overflow:ellipsis} .brand small{white-space:nowrap; overflow:hidden; text-overflow:ellipsis} }
 
 /* ---------- Home typewriter ---------- */
 .tw-c{opacity:0} .tw-c.on{opacity:1}
@@ -2021,6 +2029,53 @@ const CoverFinder = {
 };
 
 /* =====================================================================
+   3c. STUDIO PASSWORD (local editing mode)
+   Protects the Studio on this browser with a password you choose.
+   Stored as a salted PBKDF2-SHA-256 hash; a one-time recovery code
+   resets it. The published site has no Studio at all, so this lock is
+   only about who can edit from this browser.
+   ===================================================================== */
+const b64e = (u8) => btoa(String.fromCharCode(...u8));
+const b64d = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+const Lock = {
+  rec: null, fails: 0, _mem: false, ITER: 210000,
+  available() { return !!(window.crypto && crypto.subtle && crypto.getRandomValues); },
+  async load() { if (App.mode !== 'local') return; try { const r = await LocalBackend.get('kv', 'lock'); this.rec = r && r.hash ? r : null; } catch (e) { this.rec = null; } },
+  get enabled() { return App.mode === 'local' && !!this.rec; },
+  get unlocked() {
+    if (!this.enabled) return true;
+    try { return sessionStorage.getItem('harshaad.unlocked') === this.rec.hash.slice(0, 24); } catch (e) { return this._mem; }
+  },
+  mark() { this._mem = true; try { sessionStorage.setItem('harshaad.unlocked', this.rec.hash.slice(0, 24)); } catch (e) {} },
+  lock() { this._mem = false; try { sessionStorage.removeItem('harshaad.unlocked'); } catch (e) {} },
+  async derive(secret, saltB64, iter) {
+    const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), 'PBKDF2', false, ['deriveBits']);
+    const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: b64d(saltB64), iterations: iter }, key, 256);
+    return b64e(new Uint8Array(bits));
+  },
+  same(a, b) { if (a.length !== b.length) return false; let d = 0; for (let i = 0; i < a.length; i++) d |= a.charCodeAt(i) ^ b.charCodeAt(i); return d === 0; },
+  normCode: (c) => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, ''),
+  async set(pw) {
+    if (!this.available()) throw new Error('This browser cannot create a secure password here. Open the file directly in Chrome, Edge, Firefox or Safari.');
+    const salt = b64e(crypto.getRandomValues(new Uint8Array(16))), rsalt = b64e(crypto.getRandomValues(new Uint8Array(16)));
+    const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; const rnd = crypto.getRandomValues(new Uint8Array(16));
+    const code = Array.from(rnd, (n) => A[n % A.length]).join('').replace(/(.{4})(?=.)/g, '$1-');
+    const rec = { key: 'lock', iter: this.ITER, salt, hash: await this.derive(pw, salt, this.ITER), rsalt, rhash: await this.derive(this.normCode(code), rsalt, this.ITER), created: nowISO() };
+    await LocalBackend.put('kv', rec); this.rec = rec; this.mark(); return code;
+  },
+  async check(pw) { if (!this.rec) return true; return this.same(await this.derive(pw, this.rec.salt, this.rec.iter), this.rec.hash); },
+  async unlock(pw) {
+    if (this.fails >= 3) await sleep(Math.min(8000, 1000 * (this.fails - 2)));
+    const ok = await this.check(pw); if (ok) { this.fails = 0; this.mark(); } else this.fails++; return ok;
+  },
+  async recover(code, pw) {
+    if (!this.rec) return null; const ok = this.same(await this.derive(this.normCode(code), this.rec.rsalt, this.rec.iter), this.rec.rhash);
+    if (!ok) { this.fails++; return null; } return this.set(pw);
+  },
+  async remove() { await LocalBackend.del('kv', 'lock'); this.rec = null; this.lock(); }
+};
+
+/* =====================================================================
    7. APPLICATION STATE
    ===================================================================== */
 const App = {
@@ -2498,11 +2553,12 @@ const Shell = {
         <div class="hdr-actions">
           <button class="icon-btn" type="button" data-act="palette" aria-label="Search and commands (${isMac ? '⌘' : 'Ctrl'} K)" title="Search (${isMac ? '⌘' : 'Ctrl'} K)">${ICO.search}</button>
           <button class="icon-btn" type="button" data-act="mode" aria-label="Switch light or dark mode">${Theme.mode() === 'dark' ? ICO.sun : ICO.moon}</button>
+          ${this.loginLink()}
           <button class="icon-btn menu-btn" type="button" data-act="menu" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">${ICO.menu}</button>
         </div></div></header>
       <div class="mobile-nav" id="mobile-nav" role="dialog" aria-modal="true" aria-label="Menu">
         <button class="icon-btn close" type="button" data-act="menu-close" aria-label="Close menu">${ICO.close}</button>
-        <a href="#/">Home</a>${nav.map((n) => `<a href="#/${n.key}">${esc(n.label)}</a>`).join('')}
+        <a href="#/">Home</a>${nav.map((n) => `<a href="#/${n.key}">${esc(n.label)}</a>`).join('')}${App.mode === 'snapshot' ? '' : `<a href="#/studio">${this.signedIn() ? 'Studio' : 'Log in'}</a>`}
       </div>
       <div class="site-body"><main id="main" class="view" tabindex="-1"></main>${this.footer()}</div>
       <button class="icon-btn to-top" type="button" data-act="top" aria-label="Back to top">${ICO.up}</button>
@@ -2510,6 +2566,9 @@ const Shell = {
     this.bindScroll();
     if (App.previewTheme) Studio.previewBar();
   },
+  signedIn() { return App.mode === 'remote' ? Auth.canEdit() : App.mode === 'local' && Lock.enabled && Lock.unlocked; },
+  /* The published static copy has no Studio, so it shows no login. */
+  loginLink() { if (App.mode === 'snapshot') return ''; return `<a class="login-btn" href="#/studio">${this.signedIn() ? 'Studio' : 'Log in'}</a>`; },
   footer() {
     const s = App.settings; const y = new Date().getFullYear();
     const nav = s.nav.filter((n) => n.visible);
@@ -2524,7 +2583,7 @@ const Shell = {
           <li><a href="#/search">Search</a></li></ul></div>
       </div>
       <div class="ft-base"><span>© ${y} ${esc(s.name)}. ${esc(s.footer.text || '')}</span>
-        <span>${s.footer.colophon ? `Set in ${esc(Theme.def().fonts.display)} and ${esc(Theme.def().fonts.sans)}. ` : ''}<button type="button" data-act="shortcuts">Keyboard shortcuts</button>${Auth.canEdit() ? ` · <a href="#/studio" style="color:inherit">Studio</a>` : ''}</span></div>
+        <span>${s.footer.colophon ? `Set in ${esc(Theme.def().fonts.display)} and ${esc(Theme.def().fonts.sans)}. ` : ''}<button type="button" data-act="shortcuts">Keyboard shortcuts</button>${this.signedIn() ? ` · <a href="#/studio" style="color:inherit">Studio</a>` : ''}</span></div>
     </div></footer>`;
   },
   markNav(key) { $$('.nav a').forEach((a) => { if (a.dataset.nav === key) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }); },
@@ -3223,7 +3282,8 @@ const Palette = {
       ...nav.map((n) => ({ grp: 'Go to', label: n.t, run: () => Router.go(n.h), ty: 'Page' })),
       { grp: 'Actions', label: Theme.mode() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode', run: () => Theme.toggleMode().then(() => Shell.refresh()), ty: 'Display' },
       ...THEMES.map((t) => ({ grp: 'Actions', label: `Use theme: ${t.name}`, run: async () => { if (Auth.canEdit()) { await Theme.activate(t.id); } else { App.theme.id = t.id; Theme.apply(); } Shell.refresh(); UI.toast(`${t.name} applied`); }, ty: 'Theme' })),
-      ...(Auth.canEdit() ? [{ grp: 'Studio', label: 'Open the Studio', run: () => Router.go('#/studio'), ty: 'Studio' },
+      ...(App.mode !== 'snapshot' && !Shell.signedIn() ? [{ grp: 'Studio', label: 'Log in to the Studio', run: () => Router.go('#/studio'), ty: 'Studio' }] : []),
+      ...(Shell.signedIn() ? [{ grp: 'Studio', label: 'Open the Studio', run: () => Router.go('#/studio'), ty: 'Studio' },
         ...['post', 'note', 'research', 'project', 'book', 'watch'].map((t) => ({ grp: 'Studio', label: `New ${TYPES[t].label.toLowerCase()}`, run: () => Studio.create(t), ty: 'Studio' }))] : []),
       { grp: 'Actions', label: 'Show keyboard shortcuts', run: () => showShortcuts(), ty: 'Help' }
     ];
@@ -3508,15 +3568,16 @@ const Editor = {
 
   /* ---------- change tracking, history, autosave ---------- */
   change(structural = false) {
-    this.dirty = true; this.setStatus('dirty');
+    this.dirty = true; this.setStatus('dirty'); const u = $('[data-ed="undo"]'); if (u) u.disabled = false;
     if (structural) this.push(); else (this.pushD = this.pushD || debounce(() => this.push(), 650))();
     (this.autosaveD = this.autosaveD || debounce(() => this.autosave(), 1100))();
   },
   snap() { return JSON.stringify({ title: this.it.title, subtitle: this.it.subtitle, body: this.it.body }); },
-  push() { if (!this.it) return; const s = this.snap(); if (this.hist[this.hi] === s) return; this.hist = this.hist.slice(0, this.hi + 1); this.hist.push(s); if (this.hist.length > 250) this.hist.shift(); this.hi = this.hist.length - 1; },
+  push() { if (!this.it) return; const s = this.snap(); if (this.hist[this.hi] === s) return; this.hist = this.hist.slice(0, this.hi + 1); this.hist.push(s); if (this.hist.length > 250) this.hist.shift(); this.hi = this.hist.length - 1; this.syncUndo(); },
+  syncUndo() { const u = $('[data-ed="undo"]'), r = $('[data-ed="redo"]'); if (u) u.disabled = this.hi <= 0; if (r) r.disabled = this.hi >= this.hist.length - 1; },
   restore(s) { const o = JSON.parse(s); this.it.title = o.title; this.it.subtitle = o.subtitle; this.it.body = o.body; $('#ed-title').value = o.title; $('#ed-sub') && ($('#ed-sub').value = o.subtitle); this.renderAll(); if (this.cur && this.elOf(this.cur)) this.focus(this.cur); this.dirty = true; this.setStatus('dirty'); (this.autosaveD = this.autosaveD || debounce(() => this.autosave(), 1100))(); },
-  undo() { if (this.pushD) this.pushD.flush(); if (this.hi > 0) { this.hi--; this.restore(this.hist[this.hi]); } },
-  redo() { if (this.hi < this.hist.length - 1) { this.hi++; this.restore(this.hist[this.hi]); } },
+  undo() { if (this.pushD) this.pushD.flush(); if (this.hi > 0) { this.hi--; this.restore(this.hist[this.hi]); } this.syncUndo(); },
+  redo() { if (this.hi < this.hist.length - 1) { this.hi++; this.restore(this.hist[this.hi]); } this.syncUndo(); },
   setStatus(state, text) {
     const s = $('#ed-status'); if (!s || !this.it) return; s.classList.toggle('dirty', state === 'dirty');
     const pub = (Data.byId(this.it.id) || {}).status === 'published';
@@ -3726,7 +3787,7 @@ const Editor = {
     const sl = t.closest('.slash button[data-k]'); if (sl && this.slash) return this.applySlash(this.slash.id, sl.dataset.k);
     const pi = t.closest('[data-pop]'); if (pi) { const fn2 = this._popActions && this._popActions[pi.dataset.pop]; this.closePop(); fn2 && fn2(); return; }
     if (!t.closest('.slash')) this.closeSlash();
-    if (!t.closest('.st-pop') && !t.closest('[data-bm],[data-ed="more"]')) this.closePop();
+    if (!this.inPop(t)) this.closePop();
   },
   toolbar(act) {
     const b = this.cur && this.block(this.cur);
@@ -3807,8 +3868,11 @@ const Editor = {
     this.setType(id, k);
   },
   /* block menu & popovers */
+  /* Is this click on an open menu, or on the button that opened it? Other clicks close the menu. */
+  inPop(target) { return !!(target.closest('.st-pop') || (this.popAnchor && this.popAnchor.contains(target))); },
   pop(anchor, items) {
-    this.closePop(); const m = document.createElement('div'); m.className = 'slash st-pop'; m.setAttribute('role', 'menu'); this._popActions = {};
+    if (this.popEl && this.popAnchor === anchor) { this.closePop(); return; } // second click on the same button closes it
+    this.closePop(); this.popAnchor = anchor; anchor.setAttribute('aria-expanded', 'true'); const m = document.createElement('div'); m.className = 'slash st-pop'; m.setAttribute('role', 'menu'); this._popActions = {};
     m.innerHTML = items.map((x, i) => x === '-' ? '<div style="height:1px;background:var(--st-rule);margin:.25rem 0"></div>' : (this._popActions[i] = x.run, `<button type="button" role="menuitem" data-pop="${i}" ${x.danger ? 'style="color:var(--st-err)"' : ''}>${x.ico ? `<span class="ico">${x.ico}</span>` : ''}${esc(x.label)}${x.hint ? `<small>${esc(x.hint)}</small>` : ''}</button>`)).join('');
     (this.host.closest('.studio') || document.body).appendChild(m);
     const r = anchor.getBoundingClientRect(); const w = 240; m.style.position = 'fixed'; m.style.left = clamp(r.right - w, 8, innerWidth - w - 8) + 'px'; m.style.top = Math.min(r.bottom + 6, innerHeight - m.offsetHeight - 8) + 'px';
@@ -3817,7 +3881,7 @@ const Editor = {
     m.addEventListener('keydown', (e) => { const bs = $$('button', m); const i = bs.indexOf(document.activeElement); if (e.key === 'ArrowDown') { e.preventDefault(); (bs[i + 1] || bs[0]).focus(); } if (e.key === 'ArrowUp') { e.preventDefault(); (bs[i - 1] || bs[bs.length - 1]).focus(); } if (e.key === 'Escape') { this.closePop(); anchor.focus(); } });
     this.popEl = m;
   },
-  closePop() { if (this.popEl) { this.popEl.remove(); this.popEl = null; } },
+  closePop() { if (this.popEl) { this.popEl.remove(); this.popEl = null; } if (this.popAnchor) { this.popAnchor.setAttribute('aria-expanded', 'false'); this.popAnchor = null; } },
   blockMenu(id, anchor) {
     const b = this.block(id); const items = [];
     if (TEXT_TYPES.has(b.type)) { items.push(...[['p', 'Paragraph'], ['h2', 'Heading'], ['h3', 'Subheading'], ['quote', 'Quotation'], ['ul', 'Bulleted list'], ['ol', 'Numbered list'], ['aside', 'Margin note']].map(([k, l]) => ({ label: 'Turn into ' + l.toLowerCase(), run: () => this.setType(id, k) }))); items.push('-'); }
@@ -4027,7 +4091,7 @@ function chipInput(host, arr, { suggestions = [], onChange }) {
 }
 function miniList(host, arr, fields, onChange, addLabel = 'Add') {
   const draw = () => { host.innerHTML = `<div class="mini-list">${arr.map((row, i) => `<div class="it"><div class="flds">${fields.map((f) => f.ta ? `<textarea class="st-ta" data-i="${i}" data-k="${f.k}" rows="2" placeholder="${esc(f.ph)}">${esc(row[f.k] || '')}</textarea>` : `<input class="st-in" data-i="${i}" data-k="${f.k}" placeholder="${esc(f.ph)}" value="${esc(row[f.k] || '')}">`).join('')}</div>
-    <div style="display:grid;gap:2px"><button class="st-icon" type="button" data-up="${i}" aria-label="Move up">${ICO.up}</button><button class="st-icon" type="button" data-del="${i}" aria-label="Remove">${ICO.trash}</button></div></div>`).join('')}</div><button class="st-btn sm" type="button" data-addrow style="margin-top:.5rem">${ICO.plus} ${esc(addLabel)}</button>`; };
+    <div style="display:grid;gap:2px"><button class="st-icon" type="button" data-up="${i}" aria-label="Move up" ${i === 0 ? 'disabled' : ''}>${ICO.up}</button><button class="st-icon" type="button" data-del="${i}" aria-label="Remove">${ICO.trash}</button></div></div>`).join('')}</div><button class="st-btn sm" type="button" data-addrow style="margin-top:.5rem">${ICO.plus} ${esc(addLabel)}</button>`; };
   draw();
   host.oninput = (e) => { const t = e.target; if (t.dataset.k) { arr[+t.dataset.i][t.dataset.k] = t.value; onChange(arr); } };
   host.onclick = (e) => { const t = e.target.closest('button'); if (!t) return;
@@ -4057,24 +4121,24 @@ const Studio = {
           <div class="grp">Content</div>
           ${L('#/studio/content', 'grid', 'All content', 'all')}${L('#/studio/content?type=post', 'pen', 'Writings', 'post')}${L('#/studio/content?type=note', 'leaf', 'Notes', 'note')}${L('#/studio/content?type=research', 'flask', 'Research', 'research')}${L('#/studio/content?type=project', 'box', 'Projects', 'project')}${L('#/studio/content?type=book', 'book', 'Library', 'book')}${L('#/studio/content?type=watch', 'film', 'Watch', 'watch')}${L('#/studio/media', 'image', 'Media', 'media')}
           <div class="grp">Site</div>
-          ${L('#/studio/home', 'list', 'Home and navigation')}${L('#/studio/edit/page_about', 'user', 'About page')}${L('#/studio/resume', 'cv', 'Résumé')}${L('#/studio/themes', 'palette', 'Theme Studio')}${L('#/studio/settings', 'gear', 'Settings')}${L('#/studio/account', App.mode === 'remote' ? 'key' : 'cloud', App.mode === 'remote' ? 'Account and password' : 'Go live: login and publishing')}
+          ${L('#/studio/home', 'list', 'Home and navigation')}${L('#/studio/edit/page_about', 'user', 'About page')}${L('#/studio/resume', 'cv', 'Résumé')}${L('#/studio/themes', 'palette', 'Theme Studio')}${L('#/studio/settings', 'gear', 'Settings')}${L('#/studio/account', 'key', App.mode === 'remote' ? 'Account and password' : 'Password and publishing')}
           <div class="grp">Data</div>
           ${L('#/studio/data', 'db', 'Backup and publish')}
         </nav>
         ${App.mode === 'remote' ? `<div class="st-local" role="note" style="border-color:color-mix(in oklab, var(--st-ok) 40%, var(--st-rule2))"><b style="color:var(--st-ok)">${ICO.cloud.replace('<svg ', '<svg width="13" height="13" ')} Live site</b>Signed in as ${esc(Auth.email() || 'site admin')}. Saving and publishing update the website immediately.
           <div class="st-row" style="margin-top:.6rem"><a class="st-btn sm" href="#/">${ICO.eye} View site</a><button class="st-btn sm ghost" type="button" data-st="signout">Sign out</button></div></div>`
-        : `<div class="st-local" role="note"><b>${ICO.lock.replace('<svg ', '<svg width="13" height="13" ')} Local editing mode</b>Changes are saved in this browser only, and anyone using this browser can edit. <a href="#/studio/account">Set up a login and live publishing</a>.
-          <div class="st-row" style="margin-top:.6rem"><a class="st-btn sm" href="#/">${ICO.eye} View site</a><button class="st-btn sm ghost" type="button" data-st="mode" aria-label="Switch light or dark">${Theme.mode() === 'dark' ? ICO.sun : ICO.moon}</button></div></div>`}
+        : `<div class="st-local" role="note"><b>${ICO.lock.replace('<svg ', '<svg width="13" height="13" ')} Local editing mode</b>Changes are saved in this browser only. ${Lock.enabled ? 'The Studio is protected by your password.' : 'Anyone using this browser can open the Studio. <a href="#/studio/account">Set a password</a>.'}
+          <div class="st-row" style="margin-top:.6rem"><a class="st-btn sm" href="#/">${ICO.eye} View site</a>${Lock.enabled ? '<button class="st-btn sm ghost" type="button" data-st="logout">Log out</button>' : ''}<button class="st-btn sm ghost" type="button" data-st="mode" aria-label="Switch light or dark">${Theme.mode() === 'dark' ? ICO.sun : ICO.moon}</button></div></div>`}
       </aside>
       <div class="st-main" id="st-main"></div></div>`;
     document.body.classList.add('in-studio');
     $('#studio').addEventListener('click', async (e) => {
-      const b = e.target.closest('[data-st]'); if (b) { if (b.dataset.st === 'nav') $('#studio').classList.toggle('nav-open'); if (b.dataset.st === 'mode') { await Theme.toggleMode(); b.innerHTML = Theme.mode() === 'dark' ? ICO.sun : ICO.moon; } if (b.dataset.st === 'signout') this.signOut(); }
+      const b = e.target.closest('[data-st]'); if (b) { if (b.dataset.st === 'nav') $('#studio').classList.toggle('nav-open'); if (b.dataset.st === 'mode') { await Theme.toggleMode(); b.innerHTML = Theme.mode() === 'dark' ? ICO.sun : ICO.moon; } if (b.dataset.st === 'signout') this.signOut(); if (b.dataset.st === 'logout') { Lock.lock(); App.inStudio = true; UI.toast('Logged out'); Router.go('#/'); } }
       if (e.target.closest('.st-nav a')) $('#studio').classList.remove('nav-open');
-      if (!e.target.closest('.st-pop,[data-bm],[data-ed="more"],[data-new]')) Editor.closePop();
+      if (!Editor.inPop(e.target)) Editor.closePop();
     });
     this.updateCounts();
-    if (App.mode === 'local' && !Prefs.get('studioNoticeSeen')) { Prefs.set('studioNoticeSeen', true); UI.modal({ title: 'Welcome to your Studio', body: `<p>This is a <b>local editing mode</b>, not a secure login. Everything you write is stored in this browser's IndexedDB on this device.</p><p>Visitors to your hosted site do not see these edits until you use <b>Backup and publish → Publish static snapshot</b> and upload the file it produces.</p><p>Browser storage can be cleared by the browser or by you, so export a JSON backup regularly.</p>`, actions: [{ label: 'Understood', primary: true, value: true }] }); }
+    if (App.mode === 'local' && !Prefs.get('studioNoticeSeen')) { Prefs.set('studioNoticeSeen', true); UI.modal({ title: 'Welcome to your Studio', body: `<p>Everything you write here is saved in this browser, on this computer. Keep using the same browser to edit.</p><p>Visitors to your website see changes after you use <b>Backup and publish → Publish static snapshot</b> and upload the file it gives you.</p><p>Browser storage can be cleared, so export a backup now and then from the same page.</p>`, actions: [{ label: 'Understood', primary: true, value: true }] }); }
   },
   updateCounts() {
     const c = { all: App.items.filter((i) => i.type !== 'page').length, media: App.media.size }; for (const t of Object.keys(TYPES)) c[t] = App.items.filter((i) => i.type === t).length;
@@ -4085,6 +4149,8 @@ const Studio = {
   async render(r) {
     if (App.mode === 'snapshot') return this.snapshotNotice();
     if (App.mode === 'remote' && !Auth.canEdit()) return this.loginPage(r);
+    if (App.mode === 'local' && Lock.enabled && !Lock.unlocked) return this.lockPage(r, 'unlock');
+    if (App.mode === 'local' && !Lock.enabled && !Prefs.get('lockSkipped') && Lock.available() && App.storage === 'idb') return this.lockPage(r, 'setup');
     if (Editor.it) Editor.close(); Editor.unbind();
     if (!App.inStudio || !$('#studio')) { App.inStudio = true; this.buildShell(); }
     App.previewTheme = null; Theme.apply();
@@ -4110,12 +4176,10 @@ const Studio = {
   },
   snapshotNotice() {
     App.inStudio = false; if (!$('.site-body')) Shell.build();
-    $('#main').innerHTML = `<div class="wrap" style="max-width:44rem;padding-block:6rem"><p class="t-label">Studio</p><h1 class="t-h1" style="margin:.5rem 0 1.5rem">Editing is off in this published copy.</h1>
-      <div class="prose"><p>This page is a static snapshot: its content is built into the file, and changes made in a visitor's browser cannot reach the published site.</p>
-      <p>To make changes, open your working copy of the site (the original <code>index.html</code>, or wherever you keep your Studio), edit there, then publish a new snapshot.</p>
-      <p>If this is your own site, you can also start editing a copy of this snapshot in this browser. The copy lives only in this browser's storage until you export it again.</p></div>
-      <div class="hero-links"><button class="btn" type="button" id="snap-edit">Edit a copy in this browser</button><a class="btn btn-ghost" href="#/">Back to the site</a></div></div>`;
-    $('#snap-edit').addEventListener('click', () => { Prefs.set('editSnapshotLocally', true); Router.replace('#/studio'); location.reload(); });
+    $('#main').innerHTML = `<div class="wrap" style="max-width:44rem;padding-block:6rem"><p class="t-label">Studio</p><h1 class="t-h1" style="margin:.5rem 0 1.5rem">There is no login on this copy.</h1>
+      <div class="prose"><p>This is the published version of the site. It cannot be edited from here by anyone; its content is built into the page.</p>
+      <p>If this is your site: open your own copy of <code>index.html</code> on your computer, log in there, make your changes, then publish a new snapshot.</p>
+      </div><div class="hero-links"><a class="btn" href="#/">Back to the site</a></div></div>`;
   },
 
   /* ---------- Dashboard ---------- */
@@ -4129,7 +4193,7 @@ const Studio = {
     main.innerHTML = this.top('Dashboard', `<div style="position:relative"><button class="st-btn pri" type="button" data-new>${ICO.plus} New</button></div>`) + `<div class="st-page">
       <h2 class="st-h2">Studio</h2><p class="st-sub">Write, edit and arrange the site. Everything here is saved in this browser.</p>
       ${App.mode === 'remote' && App.remoteEmpty ? `<div class="st-note"><b>Your Supabase project has no content yet.</b> Open this Studio in the copy of the site where you wrote your content (your original file) and use Go live, step 5, to upload it.</div>` : ''}
-      ${App.mode === 'local' ? `<div class="st-note info"><b>Want a real login and edits that update the website?</b> Follow the short setup in <a href="#/studio/account">Go live</a>.</div>` : ''}
+      ${App.mode === 'local' && !Lock.enabled ? `<div class="st-note"><b>Anyone using this browser can open your Studio.</b> <a href="#/studio/account">Set a password</a> so only you can log in.</div>` : ''}
       ${App.storage === 'memory' ? `<div class="st-note"><b>Storage is not persistent.</b> ${esc(LocalBackend.memReason || '')} Changes will be lost when this tab closes. Export a backup before leaving.</div>` : ''}
       ${ex.length ? `<div class="st-note info"><b>${ex.length} example ${ex.length === 1 ? 'entry is' : 'entries are'} still on the site.</b> They are marked “Example” publicly so nobody mistakes them for your work. <button class="st-btn sm" type="button" id="rm-ex" style="margin-left:.4rem">Remove all examples</button></div>` : ''}
       <div class="st-grid c4" style="margin-bottom:1rem">
@@ -4215,7 +4279,7 @@ const Studio = {
     const drawCats = () => {
       const cats = App.settings.categories;
       body.innerHTML = `<p class="st-sub">Categories organise writings, research areas and project kinds. Renaming updates every entry that uses the category.</p><div class="st-grid c2">${['post', 'research', 'project'].map((t) => `<div class="st-card"><h3>${t === 'post' ? 'Writing categories' : t === 'research' ? 'Research areas' : 'Project kinds'}</h3>
-        ${(cats[t] || []).map((c, i) => `<div class="sortable-row"><span class="nm">${esc(c)} <small style="color:var(--st-muted)">${App.items.filter((x) => x.type === t && x.category === c).length}</small></span><button class="st-icon" type="button" data-cup="${t}:${i}" aria-label="Move up">${ICO.up}</button><button class="st-icon" type="button" data-cren="${t}:${i}" aria-label="Rename">${ICO.edit}</button><button class="st-icon" type="button" data-cdel="${t}:${i}" aria-label="Delete">${ICO.trash}</button></div>`).join('')}
+        ${(cats[t] || []).map((c, i) => `<div class="sortable-row"><span class="nm">${esc(c)} <small style="color:var(--st-muted)">${App.items.filter((x) => x.type === t && x.category === c).length}</small></span><button class="st-icon" type="button" data-cup="${t}:${i}" aria-label="Move up" ${i === 0 ? 'disabled' : ''}>${ICO.up}</button><button class="st-icon" type="button" data-cren="${t}:${i}" aria-label="Rename">${ICO.edit}</button><button class="st-icon" type="button" data-cdel="${t}:${i}" aria-label="Delete">${ICO.trash}</button></div>`).join('')}
         <button class="st-btn sm" type="button" data-cadd="${t}" style="margin-top:.4rem">${ICO.plus} Add</button></div>`).join('')}</div>`;
     };
     const drawTags = () => {
@@ -4314,18 +4378,18 @@ const Studio = {
       const posts = App.items.filter((i) => i.type === 'post' && isPublic(i));
       main.innerHTML = this.top('Home and navigation', `<span id="hp-saved" style="font-size:.78rem;color:var(--st-ok)"></span><a class="st-btn" href="#/">${ICO.eye} View home page</a>`) + `<div class="st-page"><div class="st-grid c2">
         <div class="st-card"><h3>Home page sections</h3><p style="font-size:.8rem;color:var(--st-ink2);margin:0 0 .8rem">Order and visibility of sections below the introduction, and what each one shows.</p>
-          ${s.home.sections.map((x, i) => `<div class="sortable-row"><input type="checkbox" class="st-toggle" data-hv="${i}" ${x.visible ? 'checked' : ''} aria-label="Show ${LABEL[x.key]}"><span class="nm">${LABEL[x.key] || x.key}</span>${x.mode ? `<select class="st-sel" data-hm="${i}" aria-label="What ${LABEL[x.key]} shows" style="width:auto;padding:.25rem .4rem;font-size:.74rem">${MODES.map(([k, l]) => `<option value="${k}" ${x.mode === k ? 'selected' : ''}>${l}</option>`).join('')}</select>` : ''}<button class="st-icon" type="button" data-hu="${i}" aria-label="Move up">${ICO.up}</button><button class="st-icon" type="button" data-hd="${i}" aria-label="Move down">${ICO.down}</button></div>`).join('')}
+          ${s.home.sections.map((x, i) => `<div class="sortable-row"><input type="checkbox" class="st-toggle" data-hv="${i}" ${x.visible ? 'checked' : ''} aria-label="Show ${LABEL[x.key]}"><span class="nm">${LABEL[x.key] || x.key}</span>${x.mode ? `<select class="st-sel" data-hm="${i}" aria-label="What ${LABEL[x.key]} shows" style="width:auto;padding:.25rem .4rem;font-size:.74rem">${MODES.map(([k, l]) => `<option value="${k}" ${x.mode === k ? 'selected' : ''}>${l}</option>`).join('')}</select>` : ''}<button class="st-icon" type="button" data-hu="${i}" aria-label="Move up" ${i === 0 ? 'disabled' : ''}>${ICO.up}</button><button class="st-icon" type="button" data-hd="${i}" aria-label="Move down" ${i === s.home.sections.length - 1 ? 'disabled' : ''}>${ICO.down}</button></div>`).join('')}
           <div class="st-row" style="margin-top:1rem"><label class="st-field"><span>Entries per section</span><input class="st-in" type="number" min="1" max="9" id="hp-n" value="${s.home.perSection || 3}"></label>
           <label class="st-field"><span>Lead writing</span><select class="st-sel" id="hp-lead"><option value="">Newest featured writing</option>${posts.map((p) => `<option value="${p.id}" ${s.home.lead === p.id ? 'selected' : ''}>${esc(p.title)}</option>`).join('')}</select></label></div>
           <label class="st-check" style="margin-top:.4rem"><input type="checkbox" class="st-toggle" id="hp-type" ${s.home.typewriter !== false ? 'checked' : ''}> Type out my name on the home page, on a gentle loop</label>
           <label class="st-check"><input type="checkbox" class="st-toggle" id="hp-anim" ${s.home.animation !== false ? 'checked' : ''}> Show the small orbit animation under the introduction</label></div>
         <div class="st-card"><h3>Navigation and section visibility</h3><p style="font-size:.8rem;color:var(--st-ink2);margin:0 0 .8rem">Hidden sections disappear from menus, the footer and the home page, and their pages return “not found”.</p>
-          ${s.nav.map((n, i) => `<div class="sortable-row"><input type="checkbox" class="st-toggle" data-nv="${i}" ${n.visible ? 'checked' : ''} aria-label="Show ${esc(n.label)}"><input class="st-in" data-nl="${i}" value="${esc(n.label)}" aria-label="Label for ${esc(n.key)}" style="flex:1;padding:.35rem .5rem"><button class="st-icon" type="button" data-nu="${i}" aria-label="Move up">${ICO.up}</button><button class="st-icon" type="button" data-nd="${i}" aria-label="Move down">${ICO.down}</button></div>`).join('')}</div>
+          ${s.nav.map((n, i) => `<div class="sortable-row"><input type="checkbox" class="st-toggle" data-nv="${i}" ${n.visible ? 'checked' : ''} aria-label="Show ${esc(n.label)}"><input class="st-in" data-nl="${i}" value="${esc(n.label)}" aria-label="Label for ${esc(n.key)}" style="flex:1;padding:.35rem .5rem"><button class="st-icon" type="button" data-nu="${i}" aria-label="Move up" ${i === 0 ? 'disabled' : ''}>${ICO.up}</button><button class="st-icon" type="button" data-nd="${i}" aria-label="Move down" ${i === s.nav.length - 1 ? 'disabled' : ''}>${ICO.down}</button></div>`).join('')}</div>
         <div class="st-card"><h3>Now</h3><p style="font-size:.8rem;color:var(--st-ink2);margin:0 0 .8rem">What you are studying, reading, building or thinking about. Empty rows are hidden.</p>
           <label class="st-field"><span>Last updated</span><input class="st-in" type="date" id="hp-now-d" value="${esc(s.now.updated || '')}"></label><div id="hp-now"></div></div>
         <div class="st-card"><h3>Quotations</h3><p style="font-size:.8rem;color:var(--st-ink2);margin:0 0 .8rem">The first one is used as the epigraph in the Monograph and Commonplace themes. Only quote what you have the right to reproduce.</p><div id="hp-q"></div></div>
         <div class="st-card" style="grid-column:1/-1"><h3>Featured on the home page</h3><p style="font-size:.8rem;color:var(--st-ink2);margin:0 0 .8rem">These appear, in this order, in the Selected section, and first in their own sections (unless a section is set to newest only). Any kind of entry can be featured. Drafts are kept in the list but only show once published.</p>
-          ${Feature.list().map((id, i) => { const x = Data.byId(id); if (!x) return ''; return `<div class="sortable-row"><span style="color:var(--st-muted)">${ICO[TYPES[x.type].icon].replace('<svg ', '<svg width="15" height="15" ')}</span><span class="nm">${esc(x.title || 'Untitled')} <small style="color:var(--st-muted)">${TYPES[x.type].label}${isPublic(x) ? '' : ', not published'}</small></span><button class="st-icon" type="button" data-fu="${i}" aria-label="Move up">${ICO.up}</button><button class="st-icon" type="button" data-fd="${i}" aria-label="Move down">${ICO.down}</button><button class="st-icon" type="button" data-fx="${id}" aria-label="Remove from featured">${ICO.close}</button></div>`; }).join('') || '<p style="font-size:.8rem;color:var(--st-muted)">Nothing featured yet.</p>'}
+          ${Feature.list().map((id, i) => { const x = Data.byId(id); if (!x) return ''; return `<div class="sortable-row"><span style="color:var(--st-muted)">${ICO[TYPES[x.type].icon].replace('<svg ', '<svg width="15" height="15" ')}</span><span class="nm">${esc(x.title || 'Untitled')} <small style="color:var(--st-muted)">${TYPES[x.type].label}${isPublic(x) ? '' : ', not published'}</small></span><button class="st-icon" type="button" data-fu="${i}" aria-label="Move up" ${i === 0 ? 'disabled' : ''}>${ICO.up}</button><button class="st-icon" type="button" data-fd="${i}" aria-label="Move down" ${i === Feature.list().length - 1 ? 'disabled' : ''}>${ICO.down}</button><button class="st-icon" type="button" data-fx="${id}" aria-label="Remove from featured">${ICO.close}</button></div>`; }).join('') || '<p style="font-size:.8rem;color:var(--st-muted)">Nothing featured yet.</p>'}
           <select class="st-sel" id="hp-fadd" style="margin-top:.6rem;max-width:28rem"><option value="">Feature another entry…</option>${Object.keys(TYPES).filter((t) => t !== 'page').map((t) => { const opts = App.items.filter((x) => x.type === t && x.status !== 'archived' && !Feature.has(x.id)); return opts.length ? `<optgroup label="${TYPES[t].plural}">${opts.map((x) => `<option value="${x.id}">${esc(x.title || 'Untitled')}${isPublic(x) ? '' : ' (draft)'}</option>`).join('')}</optgroup>` : ''; }).join('')}</select></div>
       </div></div>`;
       miniList($('#hp-now', main), s.now.entries, [{ k: 'label', ph: 'Label, e.g. Reading' }, { k: 'text', ph: 'What', ta: true }], save, 'Add row');
@@ -4360,11 +4424,11 @@ const Studio = {
         <div class="st-card" style="margin-bottom:1rem"><h3>Downloadable PDF</h3>${pdf ? `<p style="font-size:.84rem;margin:0 0 .8rem">${esc(pdf.name)}, ${fmtBytes(pdf.size)}. The CV page shows a Download CV button.</p>` : `<p style="font-size:.84rem;margin:0 0 .8rem;color:var(--st-ink2)">No PDF uploaded, so the CV page offers printing only. Upload your original CV to enable the Download button; it is embedded in the static snapshot.</p>`}
           <div class="st-row"><button class="st-btn" type="button" id="rs-pdf">${ICO.upload} ${pdf ? 'Replace PDF' : 'Upload PDF'}</button>${pdf ? `<a class="st-btn ghost" href="${Media.url(pdf.id)}" download="${esc(pdf.name)}">Check download</a><button class="st-btn ghost danger" type="button" id="rs-pdf-rm">Remove</button>` : ''}</div></div>
         <div class="st-card" style="margin-bottom:1rem"><label class="st-field"><span>Headline</span><input class="st-in" data-rs="headline" value="${esc(rs.headline)}"></label><label class="st-field"><span>Profile</span><textarea class="st-ta" data-rs="profile" rows="4">${esc(rs.profile)}</textarea></label></div>
-        ${rs.sections.map((x, si) => `<div class="res-sec"><div class="hd"><input data-st-title="${si}" value="${esc(x.title)}" aria-label="Section title"><span class="st-pill nodot">${KIND[x.kind]}</span><button class="st-icon" type="button" data-su="${si}" aria-label="Move section up">${ICO.up}</button><button class="st-icon" type="button" data-sd="${si}" aria-label="Move section down">${ICO.down}</button><button class="st-icon" type="button" data-sx="${si}" aria-label="Delete section">${ICO.trash}</button></div><div class="bd" id="rs-sec-${si}">${x.kind === 'entries' ? x.items.map((it, ei) => `<div class="res-ent">
+        ${rs.sections.map((x, si) => `<div class="res-sec"><div class="hd"><input data-st-title="${si}" value="${esc(x.title)}" aria-label="Section title"><span class="st-pill nodot">${KIND[x.kind]}</span><button class="st-icon" type="button" data-su="${si}" aria-label="Move section up" ${si === 0 ? 'disabled' : ''}>${ICO.up}</button><button class="st-icon" type="button" data-sd="${si}" aria-label="Move section down" ${si === rs.sections.length - 1 ? 'disabled' : ''}>${ICO.down}</button><button class="st-icon" type="button" data-sx="${si}" aria-label="Delete section">${ICO.trash}</button></div><div class="bd" id="rs-sec-${si}">${x.kind === 'entries' ? x.items.map((it, ei) => `<div class="res-ent">
             <div class="st-row"><label class="st-field"><span>Title</span><input class="st-in" data-e="${si}:${ei}:title" value="${esc(it.title)}"></label><label class="st-field" style="max-width:12rem"><span>Dates</span><input class="st-in" data-e="${si}:${ei}:when" value="${esc(it.when)}" placeholder="2023 – 2028"></label></div>
             <div class="st-row"><label class="st-field"><span>Organisation or role</span><input class="st-in" data-e="${si}:${ei}:org" value="${esc(it.org)}"></label><label class="st-field" style="max-width:12rem"><span>Location</span><input class="st-in" data-e="${si}:${ei}:location" value="${esc(it.location)}"></label></div>
             <label class="st-field"><span>Details, one per line</span><textarea class="st-ta" rows="3" data-e="${si}:${ei}:bullets">${esc((it.bullets || []).join('\n'))}</textarea></label>
-            <div class="st-row"><label class="st-field"><span>Link (optional)</span><input class="st-in" data-e="${si}:${ei}:link" value="${esc(it.link || '')}" placeholder="#/research/… or https://…"></label><button class="st-btn sm" type="button" data-eu="${si}:${ei}">${ICO.up} Up</button><button class="st-btn sm ghost danger" type="button" data-ex="${si}:${ei}">Remove</button></div></div>`).join('') + `<button class="st-btn sm" type="button" data-ea="${si}">${ICO.plus} Add entry</button>`
+            <div class="st-row"><label class="st-field"><span>Link (optional)</span><input class="st-in" data-e="${si}:${ei}:link" value="${esc(it.link || '')}" placeholder="#/research/… or https://…"></label><button class="st-btn sm" type="button" data-eu="${si}:${ei}" ${ei === 0 ? 'disabled' : ''}>${ICO.up} Up</button><button class="st-btn sm ghost danger" type="button" data-ex="${si}:${ei}">Remove</button></div></div>`).join('') + `<button class="st-btn sm" type="button" data-ea="${si}">${ICO.plus} Add entry</button>`
           : x.kind === 'list' ? `<label class="st-field"><span>One item per line</span><textarea class="st-ta" rows="4" data-l="${si}">${esc(x.items.join('\n'))}</textarea></label>`
           : x.kind === 'text' ? `<textarea class="st-ta" rows="4" data-tx="${si}">${esc(x.text || '')}</textarea>` : ''}</div></div>`).join('')}
         <div class="st-row"><button class="st-btn" type="button" data-sa="entries">${ICO.plus} Section with entries</button><button class="st-btn" type="button" data-sa="list">${ICO.plus} List section</button><button class="st-btn" type="button" data-sa="skills">${ICO.plus} Labelled list</button><button class="st-btn" type="button" data-sa="text">${ICO.plus} Paragraph</button></div></div>`;
@@ -4519,6 +4583,79 @@ const Studio = {
         for (const st of STORES) await LocalBackend.clear(st); try { Object.keys(localStorage).filter((k) => k.startsWith('harshaad.')).forEach((k) => localStorage.removeItem(k)); } catch (_) {}
         Router.replace('#/studio'); location.reload(); } };
   },
+  /* ---------- Studio password (local mode) ---------- */
+  lockPage(r, mode = 'unlock') {
+    Studio.teardown(); App.inStudio = true; document.title = 'Log in — ' + App.settings.name; loadFonts(['Inter', 'Cormorant Garamond']);
+    const body = mode === 'setup' ? `<p style="color:var(--st-ink2);margin:0 0 1.4rem;font-size:.86rem">Choose a password for your Studio. After this, only someone who knows it can open the Studio in this browser.</p>
+        <form id="lk-form" novalidate><label class="st-field"><span>New password</span><input class="st-in" type="password" name="pw" autocomplete="new-password" required><small>At least 8 characters.</small></label>
+        <label class="st-field"><span>Repeat password</span><input class="st-in" type="password" name="pw2" autocomplete="new-password" required></label>
+        <p class="st-err" id="lk-err" role="alert"></p><button class="st-btn pri" type="submit">Set password and log in</button></form>
+        <div class="st-row" style="justify-content:space-between;margin-top:1rem"><button class="st-btn sm ghost" type="button" id="lk-skip">Not now</button><a class="st-btn sm ghost" href="#/">Back to the site</a></div>`
+      : mode === 'recover' ? `<p style="color:var(--st-ink2);margin:0 0 1.4rem;font-size:.86rem">Enter the recovery code you saved when you set the password, then choose a new password.</p>
+        <form id="lk-form" novalidate><label class="st-field"><span>Recovery code</span><input class="st-in mono" name="code" autocomplete="off" required placeholder="XXXX-XXXX-XXXX-XXXX"></label>
+        <label class="st-field"><span>New password</span><input class="st-in" type="password" name="pw" autocomplete="new-password" required></label>
+        <label class="st-field"><span>Repeat new password</span><input class="st-in" type="password" name="pw2" autocomplete="new-password" required></label>
+        <p class="st-err" id="lk-err" role="alert"></p><button class="st-btn pri" type="submit">Reset password and log in</button></form>
+        <div class="st-row" style="justify-content:space-between;margin-top:1rem"><button class="st-btn sm ghost" type="button" id="lk-back">Back to log in</button><a class="st-btn sm ghost" href="#/">Back to the site</a></div>`
+      : `<p style="color:var(--st-ink2);margin:0 0 1.4rem;font-size:.86rem">Log in to edit ${esc(App.settings.name)}.</p>
+        <form id="lk-form" novalidate><input type="text" name="username" autocomplete="username" value="studio" hidden><label class="st-field"><span>Password</span><input class="st-in" type="password" name="pw" autocomplete="current-password" required></label>
+        <p class="st-err" id="lk-err" role="alert"></p><button class="st-btn pri" type="submit">Log in</button></form>
+        <div class="st-row" style="justify-content:space-between;margin-top:1rem"><button class="st-btn sm ghost" type="button" id="lk-forgot">Forgot password?</button><a class="st-btn sm ghost" href="#/">Back to the site</a></div>`;
+    $('#app').innerHTML = `<div class="studio st-login"><main class="st-login-card" aria-labelledby="lk-h"><h1 id="lk-h">${mode === 'setup' ? 'Set a password' : mode === 'recover' ? 'Reset password' : 'Log in'}</h1>${body}</main></div>`;
+    const form = $('#lk-form'), err = $('#lk-err'); setTimeout(() => (form.code || form.pw).focus(), 50);
+    const done = (msg) => { UI.toast(msg); App.inStudio = false; Router.render(); };
+    form.onsubmit = async (e) => {
+      e.preventDefault(); err.textContent = ''; const btn = $('button[type=submit]', form); const label = btn.textContent;
+      if (mode !== 'unlock') { if (form.pw.value.length < 8) { err.textContent = 'Use at least 8 characters.'; return; } if (form.pw.value !== form.pw2.value) { err.textContent = 'The two passwords do not match.'; return; } }
+      btn.disabled = true; btn.textContent = mode === 'unlock' ? 'Checking…' : 'Saving…';
+      try {
+        if (mode === 'unlock') { if (await Lock.unlock(form.pw.value)) return done('Logged in'); err.textContent = 'That password is not right.'; form.pw.select(); }
+        else if (mode === 'setup') { const code = await Lock.set(form.pw.value); await this.showRecovery(code); return done('Password set. You are logged in.'); }
+        else { const code = await Lock.recover(form.code.value, form.pw.value); if (!code) err.textContent = 'That recovery code is not right.'; else { await this.showRecovery(code); return done('Password reset. You are logged in.'); } }
+      } catch (ex) { err.textContent = ex.message; }
+      btn.disabled = false; btn.textContent = label;
+    };
+    const skip = $('#lk-skip'); if (skip) skip.onclick = () => { Prefs.set('lockSkipped', true); App.inStudio = false; Router.render(); };
+    const fg = $('#lk-forgot'); if (fg) fg.onclick = () => this.lockPage(r, 'recover');
+    const bk = $('#lk-back'); if (bk) bk.onclick = () => this.lockPage(r, 'unlock');
+  },
+  showRecovery(code) {
+    const body = document.createElement('div');
+    body.innerHTML = `<p>If you ever forget your password, this code is the only way to reset it. Write it down or save it somewhere safe. It will not be shown again.</p>
+      <p style="font-family:'IBM Plex Mono',monospace;font-size:1.25rem;letter-spacing:.06em;text-align:center;padding:.9rem;border:1px dashed var(--st-rule2, #ccc);border-radius:8px;margin:1rem 0;color:var(--st-ink, inherit)">${esc(code)}</p>
+      <button class="st-btn" type="button" id="rc-copy">${ICO.copy} Copy code</button>`;
+    return UI.modal({ title: 'Your recovery code', body, className: 'studio', actions: [{ label: 'I have saved it', primary: true, value: true }],
+      onOpen: (back) => { $('#rc-copy', back).onclick = async () => UI.toast((await copyText(code)) ? 'Recovery code copied' : 'Copy failed. Write the code down.'); } });
+  },
+  passwordCard(box) {
+    const draw = () => {
+      if (!Lock.available() || App.storage !== 'idb') { box.innerHTML = `<div class="st-card"><h3>Studio password</h3><p style="font-size:.84rem;color:var(--st-ink2);margin:0">A password cannot be set in this window, because the browser is not saving data here. Open your <code>index.html</code> directly in Chrome, Edge, Firefox or Safari.</p></div>`; return; }
+      box.innerHTML = Lock.enabled ? `<form class="st-card" id="pc-form" novalidate><h3>Studio password</h3>
+          <p style="font-size:.84rem;color:var(--st-ink2);margin:0 0 1rem">The Studio in this browser asks for your password. You stay logged in until you close the tab or log out.</p>
+          <label class="st-field"><span>Current password</span><input class="st-in" type="password" name="cur" autocomplete="current-password" required></label>
+          <label class="st-field"><span>New password</span><input class="st-in" type="password" name="pw" autocomplete="new-password"><small>At least 8 characters.</small></label>
+          <label class="st-field"><span>Repeat new password</span><input class="st-in" type="password" name="pw2" autocomplete="new-password"></label>
+          <p class="st-err" id="pc-err" role="alert"></p>
+          <div class="st-row"><button class="st-btn pri" type="submit">Change password</button><button class="st-btn" type="button" id="pc-out">Log out now</button><button class="st-btn ghost danger" type="button" id="pc-rm">Remove password</button></div></form>`
+        : `<form class="st-card" id="pc-form" novalidate><h3>Studio password</h3>
+          <p style="font-size:.84rem;color:var(--st-ink2);margin:0 0 1rem">Right now anyone using this browser can open the Studio. Set a password so only you can log in.</p>
+          <label class="st-field"><span>New password</span><input class="st-in" type="password" name="pw" autocomplete="new-password" required><small>At least 8 characters.</small></label>
+          <label class="st-field"><span>Repeat password</span><input class="st-in" type="password" name="pw2" autocomplete="new-password" required></label>
+          <p class="st-err" id="pc-err" role="alert"></p><button class="st-btn pri" type="submit">Set password</button></form>`;
+      box.insertAdjacentHTML('beforeend', `<p style="font-size:.76rem;color:var(--st-muted);margin:.7rem 0 0">Your published website cannot be edited by anyone: it has no Studio and no login. This password protects the Studio in this browser from other people who use it. It is stored only as a scrambled hash, but someone with full technical access to this computer could still get around it.</p>`);
+      const f = $('#pc-form', box), err = $('#pc-err', box);
+      f.onsubmit = async (e) => { e.preventDefault(); err.textContent = '';
+        const pw = f.pw.value; if (pw.length < 8) { err.textContent = 'Use at least 8 characters.'; return; } if (pw !== f.pw2.value) { err.textContent = 'The two passwords do not match.'; return; }
+        try { if (Lock.enabled && !(await Lock.check(f.cur.value))) { err.textContent = 'The current password is not right.'; return; }
+          const code = await Lock.set(pw); await this.showRecovery(code); UI.toast(Lock.enabled ? 'Password saved' : 'Password set'); this.buildShell(); Router.render(); } catch (ex) { err.textContent = ex.message; } };
+      const out = $('#pc-out', box); if (out) out.onclick = () => { Lock.lock(); App.inStudio = true; UI.toast('Logged out'); Router.go('#/'); };
+      const rm = $('#pc-rm', box); if (rm) rm.onclick = async () => { err.textContent = '';
+        if (!(await Lock.check(f.cur.value))) { err.textContent = 'Enter your current password to remove it.'; f.cur.focus(); return; }
+        if (await UI.confirm('Remove the Studio password?', 'Anyone using this browser will be able to open the Studio again.', { okLabel: 'Remove password', danger: true })) { await Lock.remove(); Prefs.set('lockSkipped', true); UI.toast('Password removed'); this.buildShell(); Router.render(); } };
+    };
+    draw();
+  },
+
   /* ---------- Sign-in (hosted mode) ---------- */
   loginPage(r) {
     Studio.teardown(); App.inStudio = true; document.title = 'Sign in — ' + App.settings.name; loadFonts(['Inter', 'Cormorant Garamond']);
@@ -4579,7 +4716,8 @@ const Studio = {
     if (g.url && g.key) { Supa.setup({ supabaseUrl: g.url, anonKey: g.key }); if (!Auth.session) Auth.load(); }
     const saveG = () => Prefs.set('golive', g);
     const draw = () => {
-      main.innerHTML = this.top('Go live: login and publishing') + `<div class="st-page narrow">
+      main.innerHTML = this.top('Password and publishing') + `<div class="st-page narrow"><div id="pw-card" style="margin-bottom:1.6rem"></div>
+        <details class="golive" ${g.connected || g.url ? 'open' : ''}><summary style="cursor:pointer;font-weight:600;font-size:.95rem;margin-bottom:.8rem">Optional: edit from anywhere with Supabase</summary>
         <p class="st-sub">Right now everything lives in this browser. Connecting a free Supabase project gives you a real email and password login, lets you change your password, and makes every save update the public website straight away. It takes about ten minutes, once.</p>
         <div class="steps">
           <section class="step"><h3>Create a free Supabase project</h3><p>Sign up at Supabase and create a new project. Any name and region work; note the database password it asks for somewhere safe (you will not need it here).</p><a class="st-btn sm" href="https://supabase.com/dashboard/new" target="_blank" rel="noopener">${ICO.ext} Open Supabase</a></section>
@@ -4600,7 +4738,8 @@ const Studio = {
             <li>In Supabase, open <b>Authentication → URL Configuration</b> and set the <b>Site URL</b> to your site’s address, so password-reset emails link back to it.</li>
             <li>From then on, open <code>your-address/#/studio</code>, sign in, and edit. Changes appear for everyone as soon as you save or publish.</li></ol>
             <div class="st-row"><button class="st-btn acc" type="button" id="gl-file" ${g.connected ? '' : 'disabled'}>${ICO.download} Download site file</button><button class="st-btn" type="button" id="gl-switch" ${g.connected && g.uploaded ? '' : 'disabled'}>Edit the live site from this browser now</button></div></section>
-        </div></div>`;
+        </div></details></div>`;
+      this.passwordCard($('#pw-card', main));
       const sql = () => { $('#gl-sql', main).textContent = setupSQL($('#gl-email', main).value || 'YOUR-EMAIL@example.com'); };
       sql();
       $('#gl-email', main).oninput = (e) => { g.email = e.target.value.trim(); saveG(); sql(); };
@@ -4777,7 +4916,7 @@ const Exporter = {
       actions: [{ label: 'Cancel', value: null }, { label: 'Merge', value: 'merge' }, { label: 'Replace everything', primary: true, danger: true, value: 'replace' }] });
     if (!choice) return;
     try {
-      if (choice === 'replace') { for (const s of STORES) await DB.clear(s); App.items = []; App.media = new Map(); App.urls.forEach((u) => URL.revokeObjectURL(u)); App.urls = new Map(); }
+      if (choice === 'replace') { const keepLock = App.mode === 'local' ? Lock.rec : null; for (const s of STORES) await DB.clear(s); if (keepLock) await LocalBackend.put('kv', keepLock); App.items = []; App.media = new Map(); App.urls.forEach((u) => URL.revokeObjectURL(u)); App.urls = new Map(); }
       for (const m of p.media || []) { if (choice === 'merge' && App.media.has(m.id)) continue; const rec = { ...m, blob: await dataURLToBlob(m.data) }; delete rec.data; const saved = (await DB.put('media', rec)) || rec; App.media.set(saved.id, saved); }
       for (const raw of p.items) { const it = normalizeItem(raw); const cur = Data.byId(it.id); if (choice === 'merge' && cur && cur.updated >= it.updated) continue; await DB.put('items', it); const i = App.items.findIndex((x) => x.id === it.id); if (i > -1) App.items[i] = it; else App.items.push(it); }
       for (const d of p.drafts || []) if (choice === 'replace') await DB.put('drafts', d);
@@ -4880,6 +5019,7 @@ const Zip = {
    ===================================================================== */
 async function boot() {
   await Data.init();
+  await Lock.load();
   if (App.mode === 'snapshot') Object.assign(App.theme.modes, Prefs.get('snapMode', {}));
   Theme.apply(); Keys.init();
   if (Data.linkType === 'recovery') Router.replace('#/studio/account?reset=1');
