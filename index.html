@@ -646,7 +646,7 @@ p{margin:0 0 1em; text-wrap:pretty}
 [data-theme="swiss"] .btn,[data-theme="swiss"] .chip,[data-theme="swiss"] .input,[data-theme="swiss"] .icon-btn{border-radius:0}
 [data-theme="swiss"] .hero-swiss{display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:var(--s5); padding-block:var(--s8) var(--s7); border-bottom:1px solid var(--ink)}
 [data-theme="swiss"] .hero-name{grid-column:1 / -1; font-family:var(--f-sans); font-weight:700; font-size:clamp(3.4rem, .8rem + 11vw, 12rem); line-height:.84; letter-spacing:-.065em; text-transform:lowercase}
-[data-theme="swiss"] .hero-name span{display:block}
+[data-theme="swiss"] .hero-name > span{display:block}
 [data-theme="swiss"] .hero-tag{grid-column:1 / span 6; font-family:var(--f-sans); font-style:normal; font-weight:500; font-size:clamp(1.2rem, 1rem + .9vw, 1.7rem); letter-spacing:-.02em; color:var(--ink); max-width:none}
 [data-theme="swiss"] .hero-intro{grid-column:7 / span 6; margin-top:var(--s5); font-family:var(--f-sans); font-size:1rem; line-height:1.55}
 [data-theme="swiss"] .hero-facts{grid-column:1 / -1; display:grid; grid-template-columns:repeat(auto-fit, minmax(12rem, 1fr)); gap:var(--s4); margin-top:var(--s6); font-family:var(--f-sans); font-size:.85rem; border-top:1px solid var(--ink); padding-top:var(--s3)}
@@ -719,8 +719,8 @@ p{margin:0 0 1em; text-wrap:pretty}
 [data-theme="modernist"] .nav a[aria-current="page"]::after{height:3px; bottom:.1rem; background:var(--accent)}
 [data-theme="modernist"] .hero-mod{padding-block:var(--s7) var(--s8); position:relative}
 [data-theme="modernist"] .hero-name{font-size:clamp(4.2rem, .5rem + 15vw, 17rem); line-height:.8; letter-spacing:-.055em; font-weight:400}
-[data-theme="modernist"] .hero-name span{display:block}
-[data-theme="modernist"] .hero-name span + span{padding-left:clamp(1.5rem, 14vw, 16rem); font-style:italic}
+[data-theme="modernist"] .hero-name > span{display:block}
+[data-theme="modernist"] .hero-name > span + span{padding-left:clamp(1.5rem, 14vw, 16rem); font-style:italic}
 [data-theme="modernist"] .mod-grid{display:grid; gap:var(--s5); margin-top:var(--s7)}
 @media (min-width:900px){ [data-theme="modernist"] .mod-grid{grid-template-columns:repeat(12, minmax(0,1fr))}
   [data-theme="modernist"] .mod-grid .hero-tag{grid-column:1 / span 4; margin:0} [data-theme="modernist"] .mod-grid .hero-intro{grid-column:7 / span 5; margin:0} }
@@ -1092,6 +1092,82 @@ input[type="color"]{width:2.4rem; height:2rem; padding:0; border:1px solid var(-
 kbd.k{font-family:"IBM Plex Mono", monospace; font-size:.7rem; border:1px solid var(--st-rule2); border-bottom-width:2px; border-radius:4px; padding:.02rem .32rem; background:var(--st-panel)}
 .shortcuts{display:grid; grid-template-columns:1fr auto; gap:.45rem 1rem; font-size:.84rem}
 
+/* ---------- Bases-style card views (Watch, Selected, Library cards) ---------- */
+.bases{display:grid; grid-template-columns:repeat(auto-fill, minmax(var(--card-min, 15rem), 1fr)); gap:var(--s5)}
+.bases.posters{--card-min:10.5rem}
+.bases.posters .props div{grid-template-columns:3.6rem 1fr}
+.bcard{display:flex; flex-direction:column; text-decoration:none; background:var(--surface); border:1px solid var(--rule); border-radius:calc(var(--radius) + 6px); overflow:hidden; transition:border-color .25s, transform .35s var(--ease), box-shadow .35s}
+.bcard:hover{border-color:var(--rule-strong); transform:translateY(-3px); box-shadow:0 18px 30px -24px rgba(0,0,0,.45)}
+.bimg{position:relative; background:var(--bg-2); overflow:hidden; aspect-ratio:16/9}
+.bimg.r-23{aspect-ratio:2/3} .bimg.r-43{aspect-ratio:4/3}
+.bimg img,.bimg svg{width:100%; height:100%; object-fit:cover; display:block}
+.bimg .play{position:absolute; left:.6rem; bottom:.6rem; width:2rem; height:2rem; border-radius:50%; background:rgba(15,13,11,.72); color:#fff; display:grid; place-items:center}
+.bimg .play svg{width:.9rem; height:.9rem}
+.bimg .gen-poster{position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:12%; color:#F4EEE2}
+.bimg .gen-poster b{font-family:var(--f-display); font-weight:500; font-size:1.15rem; line-height:1.1}
+.bbody{padding:.8rem .9rem 1rem; display:grid; gap:.55rem}
+.bbody .ttl{font-family:var(--f-display); font-size:1.12rem; line-height:1.2; color:var(--ink)}
+.bcard:hover .ttl{color:var(--accent)}
+.props{margin:0; display:grid; gap:.25rem; font-family:var(--f-sans); font-size:.74rem}
+.props div{display:grid; grid-template-columns:4.6rem 1fr; gap:.5rem}
+.props dt{color:var(--muted)} .props dd{margin:0; color:var(--ink-2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.group-hd{font-family:var(--f-sans); font-size:.8rem; font-weight:500; color:var(--muted); margin:var(--s6) 0 var(--s4)}
+.seg{display:inline-flex; border:1px solid var(--rule-strong); border-radius:999px; overflow:hidden}
+.seg button{border:0; background:transparent; padding:.45rem .9rem; font-family:var(--f-sans); font-size:.8rem; color:var(--ink-2)}
+.seg button[aria-pressed="true"]{background:var(--ink); color:var(--bg)}
+.thumb{width:4.2rem; aspect-ratio:16/9; object-fit:cover; border-radius:4px; background:var(--bg-2); display:block}
+.thumb.r-23{width:2.6rem; aspect-ratio:2/3}
+.video-embed{position:relative; aspect-ratio:16/9; background:#000; border-radius:calc(var(--radius) + 4px); overflow:hidden; margin:0 0 var(--s6)}
+.video-embed iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+.watch-hd{display:grid; gap:var(--s6); padding:var(--s8) 0 var(--s6); align-items:end}
+@media (min-width:760px){ .watch-hd.poster{grid-template-columns:14rem minmax(0,1fr)} }
+.watch-hd > *,.book-hd > *{min-width:0}
+.watch-hd .bimg{border-radius:4px; box-shadow:0 14px 24px -16px rgba(0,0,0,.45)}
+[data-theme="swiss"] .bcard,[data-theme="archive"] .bcard,[data-theme="modernist"] .bcard,[data-theme="atelier"] .bcard,[data-theme="monograph"] .bcard{border-radius:0}
+[data-theme="terminal"] .props,[data-theme="terminal"] .group-hd{font-family:var(--f-mono)}
+
+/* ---------- Home typewriter ---------- */
+.tw-c{opacity:0} .tw-c.on{opacity:1}
+.tw-caret{display:inline-block; width:0; height:.8em; border-left:max(1.5px, .035em) solid var(--accent); margin-right:calc(-1 * max(1.5px, .035em)); vertical-align:-.05em; animation:twBlink 1.1s steps(1) infinite}
+.tw-caret.busy{animation:none}
+@keyframes twBlink{50%{opacity:0}}
+[data-theme="terminal"] .hero-name.typing::after{display:none}
+.hero-name.typing{white-space:normal}
+
+/* ---------- Home orbit animation ---------- */
+.hero-host{position:relative}
+.orbit-anim{display:block; width:10.5rem; margin:var(--s6) 0 0; color:var(--ink); pointer-events:none}
+.orbit-anim svg{width:100%; height:auto; overflow:visible}
+[data-theme="editorial"] .orbit-anim,[data-theme="monograph"] .orbit-anim{margin-inline:auto}
+[data-theme="swiss"] .orbit-anim{grid-column:1 / span 4}
+@media (min-width:1000px){
+  [data-theme="academic"] .orbit-anim,[data-theme="commonplace"] .orbit-anim,[data-theme="terminal"] .orbit-anim,[data-theme="observatory"] .orbit-anim{position:absolute; right:var(--gutter); top:calc(var(--s8) + 1rem); width:15rem; margin:0}
+  [data-theme="observatory"] .orbit-anim{top:auto; bottom:var(--s8)}
+}
+
+/* ---------- Studio sign-in, setup guide, cover finder ---------- */
+.st-login{grid-template-columns:minmax(0,1fr) !important; place-items:center; padding:2rem 1rem}
+.st-login-card{width:min(25rem, 100%); background:var(--st-panel); border:1px solid var(--st-rule); border-radius:16px; padding:2rem 1.8rem; box-shadow:0 30px 60px -40px rgba(0,0,0,.35)}
+.st-login-card h1{font-family:"Cormorant Garamond", Georgia, serif; font-weight:500; font-size:2rem; margin:0 0 .3rem; letter-spacing:-.01em}
+.st-login-card .st-btn{width:100%; justify-content:center; padding:.7rem}
+.st-err{color:var(--st-err); font-size:.8rem; margin:.2rem 0 .8rem; min-height:1.1em}
+.steps{counter-reset:step; display:grid; gap:1rem}
+.step{min-width:0; background:var(--st-panel); border:1px solid var(--st-rule); border-radius:12px; padding:1.1rem 1.2rem 1.2rem 3.4rem; position:relative; counter-increment:step}
+.step::before{content:counter(step); position:absolute; left:1.1rem; top:1.05rem; width:1.6rem; height:1.6rem; border-radius:50%; background:var(--st-bg); border:1px solid var(--st-rule2); display:grid; place-items:center; font-size:.78rem; font-weight:600}
+.step.done::before{content:"✓"; background:var(--st-ok); border-color:var(--st-ok); color:#fff}
+.step h3{margin:0 0 .4rem; font-size:.95rem; font-family:inherit}
+.step p,.step li{font-size:.84rem; color:var(--st-ink2); line-height:1.55}
+.step ol,.step ul{padding-left:1.1rem; margin:.4rem 0}
+.sql{max-width:100%; font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:.72rem; line-height:1.5; background:var(--st-bg); border:1px solid var(--st-rule); border-radius:8px; padding:.8rem; max-height:16rem; overflow:auto; white-space:pre; margin:.6rem 0}
+.finder{display:grid; grid-template-columns:repeat(auto-fill, minmax(7.5rem,1fr)); gap:.7rem; max-height:55vh; overflow:auto; padding:2px}
+.finder button{border:1px solid var(--st-rule); border-radius:8px; background:var(--st-panel); padding:0; overflow:hidden; text-align:left; font-size:.7rem; color:var(--st-ink2)}
+.finder button:hover,.finder button:focus-visible{border-color:var(--st-accent)}
+.finder img{width:100%; aspect-ratio:2/3; object-fit:cover; background:var(--st-bg); display:block}
+.finder.wide img{aspect-ratio:16/9}
+.finder span{display:block; padding:.35rem .45rem; line-height:1.3}
+.st-account{margin-top:.6rem; font-size:.74rem}
+.st-account b{display:block; color:var(--st-ok)}
+
 /* Fallbacks for browsers without color-mix() (Safari before 16.2) */
 @supports not (color: color-mix(in oklab, red, blue)){
   :root{--accent-soft:rgba(120,120,120,.14); --sel:rgba(120,120,120,.22)}
@@ -1143,6 +1219,7 @@ html.reduce-motion .reveal{opacity:1; transform:none}
 <a class="skip" href="#main" data-skip>Skip to content</a>
 <div id="app"><div class="loading" role="status" aria-label="Loading"><span></span></div></div>
 <noscript><div style="max-width:36rem;margin:4rem auto;padding:0 1.5rem;font-family:Georgia,serif"><h1>Harshaad Shukoor</h1><p>This site needs JavaScript enabled to display its content.</p></div></noscript>
+<script type="application/json" id="site-config">null</script>
 <script type="application/json" id="snapshot-data">null</script>
 <script id="app-script">
 'use strict';
@@ -1153,6 +1230,7 @@ html.reduce-motion .reveal{opacity:1; transform:none}
 const PRISTINE_HTML = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
 const SNAP_OPEN = '<script type="application/json" id="snapshot-' + 'data">';
 const SNAP_CLOSE = '</' + 'script>';
+const CFG_OPEN = '<script type="application/json" id="site-' + 'config">';
 const SCHEMA_VERSION = 1;
 const APP_VERSION = '1.0.0';
 
@@ -1278,6 +1356,10 @@ const ICO = (() => {
     lock: s('<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'),
     aside: s('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M14 8h4M14 12h4M14 16h2"/>'),
     sparkle: s('<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>'),
+    play: s('<path d="M8 5.5v13l11-6.5-11-6.5Z" fill="currentColor"/>'),
+    film: s('<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/>'),
+    key: s('<circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3M15 8l2 2"/>'),
+    cloud: s('<path d="M7 18a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 18 8.5a4.5 4.5 0 0 1-.5 9.5H7Z"/>'),
     kbd: s('<rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/>')
   };
 })();
@@ -1386,10 +1468,11 @@ const LocalBackend = {
   req(r) { return new Promise((res, rej) => { r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }); },
   async get(store, key) { if (this.mem) return structuredCloneSafe(this.mem[store].get(key)); return this.req(this.tx(store, 'readonly').get(key)); },
   async getAll(store) { if (this.mem) return Array.from(this.mem[store].values()).map(structuredCloneSafe); return this.req(this.tx(store, 'readonly').getAll()); },
-  async put(store, val) { if (this.mem) { this.mem[store].set(val[store === 'kv' ? 'key' : 'id'], val); return; } return this.req(this.tx(store, 'readwrite').put(val)); },
+  async put(store, val) { if (this.mem) { this.mem[store].set(val[store === 'kv' ? 'key' : 'id'], val); return val; } await this.req(this.tx(store, 'readwrite').put(val)); return val; },
   async del(store, key) { if (this.mem) { this.mem[store].delete(key); return; } return this.req(this.tx(store, 'readwrite').delete(key)); },
   async clear(store) { if (this.mem) { this.mem[store].clear(); return; } return this.req(this.tx(store, 'readwrite').clear()); }
 };
+let DB = LocalBackend; // active storage backend: LocalBackend or RemoteBackend
 function structuredCloneSafe(v) { if (v == null) return v; try { return structuredClone(v); } catch (e) { return v; } }
 /* Preferences that must be read synchronously before first paint. */
 const Prefs = {
@@ -1406,12 +1489,17 @@ const TYPES = {
   research: { label: 'Research', plural: 'Research', route: 'research', icon: 'flask', code: 'RES' },
   project: { label: 'Project', plural: 'Projects', route: 'projects', icon: 'box', code: 'PRJ' },
   book: { label: 'Book', plural: 'Library', route: 'library', icon: 'book', code: 'LIB' },
+  watch: { label: 'Video or film', plural: 'Watch', route: 'watch', icon: 'film', code: 'WCH' },
   page: { label: 'Page', plural: 'Pages', route: '', icon: 'file', code: 'PG' }
 };
 const GROWTH = { seedling: 'Seedling', growing: 'Growing', evergreen: 'Evergreen' };
 const SHELVES = { reading: 'Currently reading', finished: 'Finished', wishlist: 'Wishlist' };
 const RSTATUS = { planned: 'Planned', ongoing: 'Ongoing', completed: 'Completed' };
 const PSTATUS = { active: 'Active', completed: 'Completed', paused: 'Paused', archived: 'Archived' };
+const WKIND = { video: 'Video', film: 'Film', series: 'Series', documentary: 'Documentary', lecture: 'Lecture' };
+const WSTATUS = { towatch: 'To watch', watching: 'Watching', watched: 'Watched' };
+const isPosterKind = (k) => k === 'film' || k === 'series' || k === 'documentary';
+function youtubeId(url) { const m = String(url || '').match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/|v\/))([\w-]{11})/); return m ? m[1] : ''; }
 
 function blankItem(type) {
   const t = nowISO();
@@ -1425,7 +1513,8 @@ function normalizeItem(it) {
   it.data = it.data || {};
   const d = it.data;
   if (it.type === 'note') d.growth = d.growth || 'seedling';
-  if (it.type === 'book') { d.author = d.author || ''; d.shelf = d.shelf || 'wishlist'; d.passages = d.passages || []; d.rating = d.rating || 0; d.progress = d.progress || 0; }
+  if (it.type === 'book') { d.author = d.author || ''; d.shelf = d.shelf || 'wishlist'; d.passages = d.passages || []; d.rating = d.rating || 0; d.progress = d.progress || 0; d.isbn = d.isbn || ''; d.coverUrl = d.coverUrl || ''; }
+  if (it.type === 'watch') { d.kind = d.kind || 'video'; d.status = d.status || 'towatch'; d.url = d.url || ''; d.creator = d.creator || ''; d.year = d.year || ''; d.rating = d.rating || 0; d.coverUrl = d.coverUrl || ''; }
   if (it.type === 'research') { d.researchStatus = d.researchStatus || 'ongoing'; d.timeline = d.timeline || []; d.references = d.references || []; d.links = d.links || []; d.attachments = d.attachments || []; }
   if (it.type === 'project') { d.projectStatus = d.projectStatus || 'active'; d.stack = d.stack || []; d.gallery = d.gallery || []; d.related = d.related || []; }
   if (it.type === 'post') { d.references = d.references || []; }
@@ -1645,9 +1734,9 @@ function seedData() {
     nav: [
       { key: 'about', label: 'About', visible: true }, { key: 'research', label: 'Research', visible: true }, { key: 'writings', label: 'Writings', visible: true },
       { key: 'notes', label: 'Notes', visible: true }, { key: 'projects', label: 'Projects', visible: true }, { key: 'library', label: 'Library', visible: true },
-      { key: 'cv', label: 'CV', visible: true }, { key: 'contact', label: 'Contact', visible: true }
+      { key: 'watch', label: 'Watch', visible: true }, { key: 'cv', label: 'CV', visible: true }, { key: 'contact', label: 'Contact', visible: true }
     ],
-    home: { sections: [{ key: 'now', visible: true }, { key: 'research', visible: true }, { key: 'writings', visible: true }, { key: 'projects', visible: true }, { key: 'notes', visible: true }, { key: 'library', visible: true }, { key: 'quotes', visible: true }], lead: null, perSection: 3 },
+    home: { sections: [{ key: 'now', visible: true }, { key: 'featured', visible: true }, { key: 'research', visible: true, mode: 'featured' }, { key: 'writings', visible: true, mode: 'featured' }, { key: 'projects', visible: true, mode: 'featured' }, { key: 'notes', visible: true, mode: 'latest' }, { key: 'library', visible: true, mode: 'featured' }, { key: 'watch', visible: true, mode: 'featured' }, { key: 'quotes', visible: true }], lead: null, perSection: 3, featured: ['rs_interp', 'pj_mc'], animation: true },
     now: { updated: '2026-11-09', entries: [
       { label: 'Studying', text: 'Physical sciences at IISER Kolkata, with a minor in computer science' },
       { label: 'Interested in', text: 'General relativity, cosmology and gravitational physics' },
@@ -1684,8 +1773,252 @@ function seedData() {
     },
     backend: { provider: 'local' }
   };
+  items.push(mk('watch', { id: 'wt_moon', slug: 'a-trip-to-the-moon', title: 'A Trip to the Moon', isExample: true, tags: ['example', 'cinema'],
+    excerpt: 'An example entry for the Watch section. Replace it with a film, lecture or video you want to keep track of.',
+    data: { kind: 'film', status: 'towatch', creator: 'Georges Méliès', year: '1902', url: '', rating: 0, coverUrl: '' },
+    body: [B.p('An example entry. Notes on a film or video go here, and YouTube links play on the page.')] }));
   return { items, settings };
 }
+/* Bring stored settings up to date with sections added in later versions (idempotent). */
+function normalizeSettings(s, items = []) {
+  const seed = seedData().settings;
+  s.nav = Array.isArray(s.nav) ? s.nav : seed.nav;
+  for (const n of seed.nav) if (!s.nav.some((x) => x.key === n.key)) { const at = s.nav.findIndex((x) => x.key === 'cv'); s.nav.splice(at < 0 ? s.nav.length : at, 0, { ...n }); }
+  s.home = Object.assign({ perSection: 3, lead: null, animation: true, typewriter: true }, s.home || {});
+  if (!Array.isArray(s.home.sections)) s.home.sections = seed.home.sections;
+  for (const sec of seed.home.sections) if (!s.home.sections.some((x) => x.key === sec.key)) { const at = sec.key === 'featured' ? 1 : s.home.sections.findIndex((x) => x.key === 'quotes'); s.home.sections.splice(at < 0 ? s.home.sections.length : at, 0, { ...sec }); }
+  s.home.sections.forEach((x) => { if (!['now', 'featured', 'quotes'].includes(x.key) && !x.mode) x.mode = x.key === 'notes' ? 'latest' : 'featured'; });
+  if (!Array.isArray(s.home.featured)) s.home.featured = items.filter((i) => i.featured).map((i) => i.id);
+  s.categories = Object.assign({}, seed.categories, s.categories || {});
+  s.contact = Object.assign({ email: '', academicEmail: '', formEndpoint: '' }, s.contact || {});
+  s.backend = Object.assign({ provider: 'local' }, s.backend || {});
+  return s;
+}
+
+/* =====================================================================
+   3b. HOSTED BACKEND — Supabase (optional)
+   When the page carries a site configuration (project URL + public anon
+   key), content is read from and written to Supabase:
+     • visitors read published content (enforced by row-level security),
+     • only accounts listed in site_admins can write (also enforced there),
+     • the Studio requires a real email + password sign-in.
+   The anon key is public by design; security comes from the database rules.
+   ===================================================================== */
+const SiteConfig = (() => {
+  const valid = (v) => v && typeof v.supabaseUrl === 'string' && /^https:\/\//.test(v.supabaseUrl) && typeof v.anonKey === 'string' && v.anonKey.length > 20 ? v : null;
+  try { const el = document.getElementById('site-config'); const v = valid(el ? JSON.parse(el.textContent || 'null') : null); if (v) return Object.assign(v, { source: 'file' }); } catch (e) {}
+  try { const v = valid(JSON.parse(localStorage.getItem('harshaad.siteConfig') || 'null')); if (v) return Object.assign(v, { source: 'browser' }); } catch (e) {}
+  return null;
+})();
+
+const Supa = {
+  url: '', key: '',
+  setup(cfg) { this.url = cfg.supabaseUrl.replace(/\/+$/, ''); this.key = cfg.anonKey; },
+  headers(extra = {}, useSession = true) {
+    const t = useSession && Auth.session && Auth.session.access_token; const h = { apikey: this.key };
+    if (t) h.Authorization = 'Bearer ' + t; else if (!this.key.startsWith('sb_')) h.Authorization = 'Bearer ' + this.key; // new publishable keys go in apikey only
+    return Object.assign(h, extra);
+  },
+  async req(path, opts = {}, { useSession = true } = {}) {
+    if (useSession) await Auth.ensureFresh();
+    let res;
+    try { res = await fetch(this.url + path, Object.assign({}, opts, { headers: this.headers(opts.headers || {}, useSession) })); }
+    catch (e) { const err = new Error('Could not reach Supabase. Check the internet connection and the project URL.'); err.network = true; throw err; }
+    if (!res.ok) {
+      let msg = res.status + ' ' + (res.statusText || ''); try { const j = await res.json(); msg = j.message || j.msg || j.error_description || j.error || msg; if (j.hint) msg += ' (' + j.hint + ')'; } catch (_) {}
+      const err = new Error(msg); err.status = res.status; throw err;
+    }
+    const text = res.status === 204 ? '' : await res.text(); if (!text) return null;
+    const ct = res.headers.get('content-type') || ''; if (ct.includes('json')) { try { return JSON.parse(text); } catch (_) { return text; } } return text;
+  }
+};
+
+const Auth = {
+  session: null, admin: false,
+  get provider() { return App.mode === 'remote' ? 'Supabase email and password' : 'none (local editing mode)'; },
+  canEdit() { return App.mode === 'local' || (App.mode === 'remote' && this.admin && !!this.session); },
+  email() { return (this.session && this.session.user && this.session.user.email) || ''; },
+  load() { const s = Prefs.get('session', null); this.session = s && s.access_token ? s : null; },
+  save(s) { this.session = s; Prefs.set('session', s); },
+  async grant(type, body) {
+    let r; try { r = await fetch(`${Supa.url}/auth/v1/token?grant_type=${type}`, { method: 'POST', headers: { apikey: Supa.key, 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
+    catch (e) { throw new Error('Could not reach Supabase. Check the internet connection.'); }
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { const m = j.error_description || j.msg || j.message || j.error || 'Sign-in failed'; throw new Error(/invalid login|invalid_grant|invalid credentials/i.test(m) ? 'That email and password do not match.' : m); }
+    return { access_token: j.access_token, refresh_token: j.refresh_token, expires_at: Date.now() + (j.expires_in || 3600) * 1000, user: { id: j.user && j.user.id, email: j.user && j.user.email } };
+  },
+  async signIn(email, password) { this.save(await this.grant('password', { email: email.trim(), password })); await this.checkAdmin(); return this.admin; },
+  async ensureFresh() {
+    const s = this.session; if (!s) return; if (Date.now() < s.expires_at - 60000) return;
+    if (this._refreshing) return this._refreshing;
+    this._refreshing = this.grant('refresh_token', { refresh_token: s.refresh_token }).then((n) => { n.user = n.user && n.user.email ? n.user : s.user; this.save(n); })
+      .catch(() => { this.save(null); this.admin = false; }).finally(() => { this._refreshing = null; });
+    return this._refreshing;
+  },
+  async checkAdmin() { try { this.admin = (await Supa.req('/rest/v1/rpc/is_site_admin', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' })) === true; } catch (e) { this.admin = false; if (e.network) throw e; } return this.admin; },
+  async fetchUser() { try { const u = await Supa.req('/auth/v1/user'); if (u && this.session) { this.session.user = { id: u.id, email: u.email }; this.save(this.session); } } catch (_) {} },
+  async signOut() { try { await fetch(Supa.url + '/auth/v1/logout', { method: 'POST', headers: Supa.headers() }); } catch (_) {} this.save(null); this.admin = false; },
+  async changePassword(pw) { await Supa.req('/auth/v1/user', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pw }) }); },
+  async recover(email) {
+    const redirect = location.href.split('#')[0];
+    const r = await fetch(`${Supa.url}/auth/v1/recover?redirect_to=${encodeURIComponent(redirect)}`, { method: 'POST', headers: { apikey: Supa.key, 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email.trim() }) });
+    if (!r.ok) { const j = await r.json().catch(() => ({})); throw new Error(j.msg || j.message || 'The reset email could not be sent.'); }
+  },
+  /* Password-reset and magic links return with tokens in the URL fragment. */
+  fromLinkHash() {
+    const h = location.hash || ''; if (!/access_token=/.test(h)) return null;
+    const p = new URLSearchParams(h.replace(/^#\/?/, ''));
+    this.save({ access_token: p.get('access_token'), refresh_token: p.get('refresh_token'), expires_at: Date.now() + (+p.get('expires_in') || 3600) * 1000, user: {} });
+    return p.get('type') || 'login';
+  }
+};
+
+const RemoteBackend = {
+  name: 'Supabase (hosted database)', kind: 'remote',
+  enc: (s) => encodeURIComponent(String(s)),
+  async loadAll() {
+    const rows = await Supa.req('/rest/v1/site_records?select=store,id,data&limit=10000');
+    const out = { items: [], kv: [], media: [], drafts: [] }; for (const r of rows || []) (out[r.store] = out[r.store] || []).push(r.data); return out;
+  },
+  async open() { return 'remote'; },
+  async get(store, id) { const rows = await Supa.req(`/rest/v1/site_records?select=data&store=eq.${store}&id=eq.${this.enc(id)}`); return rows && rows[0] ? rows[0].data : undefined; },
+  async getAll(store) { const rows = await Supa.req(`/rest/v1/site_records?select=data&store=eq.${store}&limit=10000`); return (rows || []).map((r) => r.data); },
+  async upload(rec) {
+    const ext = (rec.name.match(/\.([a-z0-9]{2,5})$/i) || [, (rec.type.split('/')[1] || 'bin').replace('jpeg', 'jpg').replace('svg+xml', 'svg')])[1].toLowerCase();
+    const path = `${rec.id}/${slugify(rec.name.replace(/\.[^.]+$/, '')) || 'file'}.${ext}`;
+    await Auth.ensureFresh();
+    let res; try { res = await fetch(`${Supa.url}/storage/v1/object/media/${path}`, { method: 'POST', headers: Supa.headers({ 'Content-Type': rec.type || 'application/octet-stream', 'x-upsert': 'true', 'cache-control': '31536000' }), body: rec.blob }); }
+    catch (e) { throw new Error('Upload failed: Supabase could not be reached.'); }
+    if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error('Upload failed: ' + (j.message || j.error || res.status)); }
+    const out = Object.assign({}, rec); delete out.blob; out.path = path; out.url = `${Supa.url}/storage/v1/object/public/media/${path}`; return out;
+  },
+  async put(store, val) {
+    const id = val[store === 'kv' ? 'key' : 'id'];
+    if (store === 'media' && val.blob) val = await this.upload(val);
+    const data = JSON.parse(JSON.stringify(val, (k, v) => (v instanceof Blob ? undefined : v)));
+    await Supa.req('/rest/v1/site_records?on_conflict=store,id', { method: 'POST', headers: { 'Content-Type': 'application/json', Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify([{ store, id, data, updated_at: nowISO() }]) });
+    return val;
+  },
+  async del(store, id, rec) {
+    if (store === 'media') { const m = rec || App.media.get(id); if (m && m.path) { try { await Auth.ensureFresh(); await fetch(`${Supa.url}/storage/v1/object/media/${m.path}`, { method: 'DELETE', headers: Supa.headers() }); } catch (_) {} } }
+    await Supa.req(`/rest/v1/site_records?store=eq.${store}&id=eq.${this.enc(id)}`, { method: 'DELETE' });
+  },
+  async clear(store) { await Supa.req(`/rest/v1/site_records?store=eq.${store}`, { method: 'DELETE' }); }
+};
+
+/* SQL run once in the Supabase SQL editor. Re-running it is safe. */
+function setupSQL(email) {
+  const e = String(email || 'YOUR-EMAIL@example.com').trim().replace(/'/g, "''");
+  return `-- Personal site: tables, security rules and media bucket.
+-- Run once in Supabase → SQL Editor. Running it again is safe.
+
+create table if not exists public.site_records (
+  store text not null,
+  id text not null,
+  data jsonb not null,
+  updated_at timestamptz not null default now(),
+  primary key (store, id)
+);
+create table if not exists public.site_admins (
+  user_id uuid primary key references auth.users (id) on delete cascade
+);
+alter table public.site_records enable row level security;
+alter table public.site_admins enable row level security;
+
+create or replace function public.is_site_admin()
+returns boolean language sql stable security definer set search_path = public
+as $$ select exists (select 1 from public.site_admins where user_id = auth.uid()) $$;
+grant execute on function public.is_site_admin() to anon, authenticated;
+
+grant select on public.site_records to anon, authenticated;
+grant insert, update, delete on public.site_records to authenticated;
+
+-- Visitors can read settings, media and published entries. Drafts stay private.
+drop policy if exists "site read" on public.site_records;
+create policy "site read" on public.site_records for select using (
+  public.is_site_admin()
+  or store in ('kv', 'media')
+  or (store = 'items' and data->>'status' = 'published')
+);
+-- Only site admins can change anything.
+drop policy if exists "site insert" on public.site_records;
+create policy "site insert" on public.site_records for insert with check (public.is_site_admin());
+drop policy if exists "site update" on public.site_records;
+create policy "site update" on public.site_records for update using (public.is_site_admin()) with check (public.is_site_admin());
+drop policy if exists "site delete" on public.site_records;
+create policy "site delete" on public.site_records for delete using (public.is_site_admin());
+
+-- Public bucket for images and PDFs; only admins can upload or delete.
+insert into storage.buckets (id, name, public) values ('media', 'media', true) on conflict (id) do update set public = true;
+drop policy if exists "site media read" on storage.objects;
+create policy "site media read" on storage.objects for select using (bucket_id = 'media');
+drop policy if exists "site media insert" on storage.objects;
+create policy "site media insert" on storage.objects for insert with check (bucket_id = 'media' and public.is_site_admin());
+drop policy if exists "site media update" on storage.objects;
+create policy "site media update" on storage.objects for update using (bucket_id = 'media' and public.is_site_admin());
+drop policy if exists "site media delete" on storage.objects;
+create policy "site media delete" on storage.objects for delete using (bucket_id = 'media' and public.is_site_admin());
+
+-- Make your login the site admin. Create the user first (Authentication → Users → Add user).
+insert into public.site_admins (user_id)
+select id from auth.users where lower(email) = lower('${e}')
+on conflict do nothing;
+
+-- Check: this should return one row with your email.
+select u.email from public.site_admins a join auth.users u on u.id = a.user_id;
+`;
+}
+
+/* Featuring on the home page: one ordered list, mirrored on each item's flag. */
+const Feature = {
+  list() { return App.settings.home.featured || (App.settings.home.featured = []); },
+  has(id) { return this.list().includes(id); },
+  async set(it, on) {
+    const l = this.list(); const i = l.indexOf(it.id);
+    if (on && i < 0) l.push(it.id); if (!on && i > -1) l.splice(i, 1);
+    it.featured = !!on; await Data.saveItem(it, { touch: false }); await Data.saveSettings();
+  }
+};
+
+/* Cover lookup: Open Library for books, Wikipedia for films, YouTube thumbnails for videos. */
+const CoverFinder = {
+  async search(it) {
+    const d = it.data; const out = [];
+    if (it.type === 'book') {
+      const q = d.isbn ? `isbn=${encodeURIComponent(d.isbn.replace(/[^0-9Xx]/g, ''))}` : `title=${encodeURIComponent(it.title)}${d.author ? `&author=${encodeURIComponent(d.author)}` : ''}`;
+      const r = await fetch(`https://openlibrary.org/search.json?${q}&fields=title,author_name,cover_i,first_publish_year&limit=12`); if (!r.ok) throw new Error('Open Library did not respond.');
+      const j = await r.json();
+      for (const doc of j.docs || []) if (doc.cover_i) out.push({ thumb: `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`, full: `https://covers.openlibrary.org/b/id/${doc.cover_i}-L.jpg`, label: `${doc.title}${doc.author_name ? ', ' + doc.author_name[0] : ''}${doc.first_publish_year ? ' (' + doc.first_publish_year + ')' : ''}` });
+      if (d.isbn && !out.length) out.push({ thumb: `https://covers.openlibrary.org/b/isbn/${d.isbn.replace(/[^0-9Xx]/g, '')}-M.jpg?default=false`, full: `https://covers.openlibrary.org/b/isbn/${d.isbn.replace(/[^0-9Xx]/g, '')}-L.jpg`, label: 'Cover by ISBN' });
+      return { items: out, wide: false, source: 'Open Library' };
+    }
+    if (it.type === 'watch') {
+      const id = youtubeId(d.url);
+      if (id) { ['maxresdefault', 'hqdefault', 'sddefault'].forEach((k) => out.push({ thumb: `https://i.ytimg.com/vi/${id}/${k}.jpg`, full: `https://i.ytimg.com/vi/${id}/${k}.jpg`, label: k === 'maxresdefault' ? 'Full-size thumbnail' : k === 'hqdefault' ? 'High quality' : 'Standard' })); return { items: out, wide: true, source: 'YouTube' }; }
+      const term = `${it.title} ${d.year || ''} ${d.kind === 'series' ? 'TV series' : d.kind === 'documentary' ? 'documentary' : 'film'}`.trim();
+      const r = await fetch(`https://en.wikipedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(term)}&gsrlimit=10&prop=pageimages&piprop=thumbnail&pithumbsize=500&pilicense=any&format=json&origin=*`);
+      if (!r.ok) throw new Error('Wikipedia did not respond.'); const j = await r.json();
+      const pages = Object.values((j.query && j.query.pages) || {}).sort((a, b) => a.index - b.index);
+      for (const p of pages) if (p.thumbnail) out.push({ thumb: p.thumbnail.source, full: p.thumbnail.source, label: p.title });
+      return { items: out, wide: false, source: 'Wikipedia' };
+    }
+    return { items: [], wide: false, source: '' };
+  },
+  /* Try to keep a copy in the media library; if the image host blocks that, link to it instead. */
+  async adopt(it, choice) {
+    try {
+      const r = await fetch(choice.full, { mode: 'cors' }); if (!r.ok) throw new Error('fetch'); const blob = await r.blob();
+      if (!blob.type.startsWith('image/') || blob.size < 1200) throw new Error('not an image');
+      const file = new File([blob], slugify(it.title || 'cover') + '.' + (blob.type.split('/')[1] || 'jpg').replace('jpeg', 'jpg'), { type: blob.type });
+      const rec = await Media.add(file, { alt: `Cover of ${it.title}` }); it.cover = rec.id; it.data.coverUrl = ''; return 'stored';
+    } catch (e) { it.cover = null; it.data.coverUrl = choice.full; return 'linked'; }
+  },
+  async details(url) {
+    const tries = [`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`, `https://noembed.com/embed?url=${encodeURIComponent(url)}`];
+    for (const t of tries) { try { const r = await fetch(t); if (!r.ok) continue; const j = await r.json(); if (j && j.title) return { title: j.title, creator: j.author_name || '' }; } catch (_) {} }
+    return null;
+  }
+};
 
 /* =====================================================================
    7. APPLICATION STATE
@@ -1708,6 +2041,18 @@ const Data = {
   async init() {
     const raw = $('#snapshot-data') ? $('#snapshot-data').textContent.trim() : 'null';
     try { App.snapshot = raw && raw !== 'null' ? JSON.parse(raw) : null; } catch (e) { App.snapshot = null; }
+    if (SiteConfig) { // hosted mode: content lives in Supabase
+      App.mode = 'remote'; App.storage = 'remote'; DB = RemoteBackend; Supa.setup(SiteConfig); Auth.load();
+      this.linkType = Auth.fromLinkHash();
+      try {
+        if (Auth.session) { await Auth.ensureFresh(); if (Auth.session) { if (this.linkType) await Auth.fetchUser(); await Auth.checkAdmin(); } }
+        await this.loadRemote(); return;
+      } catch (e) {
+        console.warn('Supabase unavailable:', e); App.remoteError = e.message;
+        if (App.snapshot) { App.mode = 'snapshot'; App.storage = 'memory'; await this.loadPayload(App.snapshot, { persist: false }); return; }
+        throw new Error('The site content could not be loaded from Supabase. ' + e.message);
+      }
+    }
     const editLocal = Prefs.get('editSnapshotLocally', false);
     if (App.snapshot && !editLocal) {
       App.mode = 'snapshot'; App.storage = 'memory'; LocalBackend.useMemory('Published snapshot (read-only).');
@@ -1721,6 +2066,20 @@ const Data = {
       App.items = []; App.media = new Map(); await this.loadLocal();
     }
   },
+  async loadRemote() {
+    const all = await RemoteBackend.loadAll(); const kv = {}; all.kv.forEach((r) => (kv[r.key] = r));
+    if (!all.items.length && !kv.settings) { // empty project: show the bundled copy (if any) until content is uploaded
+      const fallback = App.snapshot || (() => { const s = seedData(); return { settings: s.settings, items: s.items }; })();
+      await this.loadPayload(fallback, { persist: false }); App.remoteEmpty = true; return;
+    }
+    App.remoteEmpty = false;
+    App.meta = kv.meta || { key: 'meta', schemaVersion: SCHEMA_VERSION, created: nowISO(), lastBackup: null };
+    App.items = all.items.map(normalizeItem);
+    App.settings = normalizeSettings(Object.assign(seedData().settings, (kv.settings || {}).value || {}), App.items);
+    App.theme = Object.assign(defaultThemePrefs(), (kv.theme || {}).value || {});
+    App.media = new Map(all.media.map((m) => [m.id, m])); App.urls = new Map();
+  },
+  async reloadRemote() { await this.loadRemote(); Search._cache = new Map(); Theme.apply(); },
   async loadLocal() {
     let meta = await LocalBackend.get('kv', 'meta');
     if (!meta) {
@@ -1733,24 +2092,24 @@ const Data = {
     }
     await Migrations.run(meta);
     App.meta = meta;
-    App.settings = Object.assign(seedData().settings, (await LocalBackend.get('kv', 'settings') || {}).value || {});
-    App.theme = Object.assign(defaultThemePrefs(), (await LocalBackend.get('kv', 'theme') || {}).value || {});
     App.items = (await LocalBackend.getAll('items')).map(normalizeItem);
+    App.settings = normalizeSettings(Object.assign(seedData().settings, (await LocalBackend.get('kv', 'settings') || {}).value || {}), App.items);
+    App.theme = Object.assign(defaultThemePrefs(), (await LocalBackend.get('kv', 'theme') || {}).value || {});
     for (const m of await LocalBackend.getAll('media')) App.media.set(m.id, m);
   },
   async loadPayload(p, { persist }) {
     const seed = seedData();
-    App.settings = Object.assign(seed.settings, p.settings || {});
-    App.theme = Object.assign(defaultThemePrefs(), p.theme || {});
     App.items = (p.items || []).map(normalizeItem);
+    App.settings = normalizeSettings(Object.assign(seed.settings, p.settings || {}), App.items);
+    App.theme = Object.assign(defaultThemePrefs(), p.theme || {});
     App.media = new Map();
     for (const m of p.media || []) { const rec = Object.assign({}, m); if (m.data) { rec.blob = await dataURLToBlob(m.data); delete rec.data; } App.media.set(rec.id, rec); }
     App.meta = { key: 'meta', schemaVersion: p.schemaVersion || SCHEMA_VERSION, created: nowISO(), lastBackup: null };
     if (persist) {
-      for (const it of App.items) await LocalBackend.put('items', it);
-      for (const m of App.media.values()) await LocalBackend.put('media', m);
-      await LocalBackend.put('kv', { key: 'settings', value: App.settings });
-      await LocalBackend.put('kv', { key: 'theme', value: App.theme });
+      for (const it of App.items) await DB.put('items', it);
+      for (const m of [...App.media.values()]) { const saved = await DB.put('media', m); if (saved && saved !== m) App.media.set(m.id, saved); }
+      await DB.put('kv', { key: 'settings', value: App.settings });
+      await DB.put('kv', { key: 'theme', value: App.theme });
     }
   },
   all(type) { return App.items.filter((i) => !type || i.type === type); },
@@ -1766,17 +2125,17 @@ const Data = {
     if (touch) it.updated = nowISO();
     if (it.status === 'published' && !it.publishedAt) it.publishedAt = nowISO();
     const i = App.items.findIndex((x) => x.id === it.id); if (i > -1) App.items[i] = it; else App.items.push(it);
-    if (App.mode === 'local') await LocalBackend.put('items', JSON.parse(JSON.stringify(it)));
+    if (Auth.canEdit()) await DB.put('items', JSON.parse(JSON.stringify(it)));
     return it;
   },
-  async deleteItem(id) { App.items = App.items.filter((i) => i.id !== id); await LocalBackend.del('items', id); await LocalBackend.del('drafts', id); },
-  async saveSettings() { await LocalBackend.put('kv', { key: 'settings', value: JSON.parse(JSON.stringify(App.settings)) }); },
-  async saveTheme() { await LocalBackend.put('kv', { key: 'theme', value: JSON.parse(JSON.stringify(App.theme)) }); Prefs.set('themeBoot', { id: App.theme.id, mode: Theme.mode() }); },
-  async saveMeta() { await LocalBackend.put('kv', App.meta); },
+  async deleteItem(id) { App.items = App.items.filter((i) => i.id !== id); const f = Feature.list().indexOf(id); if (f > -1) { Feature.list().splice(f, 1); await this.saveSettings(); } await DB.del('items', id); await DB.del('drafts', id); },
+  async saveSettings() { if (!Auth.canEdit()) return; await DB.put('kv', { key: 'settings', value: JSON.parse(JSON.stringify(App.settings)) }); },
+  async saveTheme() { if (!Auth.canEdit()) return; await DB.put('kv', { key: 'theme', value: JSON.parse(JSON.stringify(App.theme)) }); Prefs.set('themeBoot', { id: App.theme.id, mode: Theme.mode() }); },
+  async saveMeta() { if (Auth.canEdit()) await DB.put('kv', App.meta); },
   /* Draft working copies (autosave / recovery) */
-  async putDraft(it) { await LocalBackend.put('drafts', { id: it.id, savedAt: nowISO(), item: JSON.parse(JSON.stringify(it)) }); },
-  async getDraft(id) { return LocalBackend.get('drafts', id); },
-  async dropDraft(id) { await LocalBackend.del('drafts', id); },
+  async putDraft(it) { await DB.put('drafts', { id: it.id, savedAt: nowISO(), item: JSON.parse(JSON.stringify(it)) }); },
+  async getDraft(id) { try { return await DB.get('drafts', id); } catch (e) { return null; } },
+  async dropDraft(id) { try { await DB.del('drafts', id); } catch (e) {} },
   /* Where a media record is referenced */
   mediaUsage(id) {
     const uses = [];
@@ -1812,10 +2171,11 @@ const Migrations = {
 const Media = {
   url(id) {
     if (!id) return ''; if (App.urls.has(id)) return App.urls.get(id);
-    const m = App.media.get(id); if (!m || !m.blob) return '';
+    const m = App.media.get(id); if (!m) return ''; if (!m.blob) return m.url || '';
     const u = URL.createObjectURL(m.blob); App.urls.set(id, u); return u;
   },
   get(id) { return App.media.get(id); },
+  async blob(id) { const m = App.media.get(id); if (!m) return null; if (m.blob) return m.blob; if (!m.url) return null; const r = await fetch(m.url); if (!r.ok) throw new Error('Could not download ' + m.name); return r.blob(); },
   async compress(file) {
     const MAX = 2200;
     if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return { blob: file, width: 0, height: 0 };
@@ -1832,17 +2192,17 @@ const Media = {
     return { blob, width: w, height: h };
   },
   async add(file, meta = {}) {
-    if (App.mode !== 'local') throw new Error('Editing is disabled in a published snapshot.');
+    if (!Auth.canEdit()) throw new Error(App.mode === 'remote' ? 'Sign in to the Studio to upload files.' : 'Editing is disabled in a published snapshot.');
     const isImg = file.type.startsWith('image/'); const isPdf = file.type === 'application/pdf';
     if (!isImg && !isPdf) throw new Error('Only images and PDF files can be added.');
     if (file.size > 25 * 1024 * 1024) throw new Error('Files over 25 MB are too large for browser storage.');
     const c = isImg ? await this.compress(file) : { blob: file, width: 0, height: 0 };
     const rec = { id: uid('m_'), name: file.name || 'upload', type: c.blob.type || file.type, size: c.blob.size, originalSize: file.size, width: c.width, height: c.height,
       alt: meta.alt || '', caption: meta.caption || '', description: '', created: nowISO(), blob: c.blob };
-    await LocalBackend.put('media', rec); App.media.set(rec.id, rec); return rec;
+    const saved = (await DB.put('media', rec)) || rec; App.media.set(saved.id, saved); return saved;
   },
-  async update(rec) { App.media.set(rec.id, rec); await LocalBackend.put('media', rec); },
-  async remove(id) { App.media.delete(id); if (App.urls.has(id)) { URL.revokeObjectURL(App.urls.get(id)); App.urls.delete(id); } await LocalBackend.del('media', id); }
+  async update(rec) { App.media.set(rec.id, rec); await DB.put('media', rec); },
+  async remove(id) { await DB.del('media', id, App.media.get(id)); App.media.delete(id); if (App.urls.has(id)) { URL.revokeObjectURL(App.urls.get(id)); App.urls.delete(id); } }
 };
 
 /* =====================================================================
@@ -1871,7 +2231,7 @@ const Theme = {
     root.classList.toggle('reduce-motion', !!p.reduceMotion);
     const mc = $('meta[name="theme-color"]') || Object.assign(document.createElement('meta'), { name: 'theme-color' }); mc.content = c.bg; if (!mc.parentNode) document.head.appendChild(mc);
   },
-  async setMode(mode) { App.theme.modes[this.id()] = mode; this.apply(); if (App.mode === 'local' && !App.previewTheme) await Data.saveTheme(); else Prefs.set('snapMode', App.theme.modes); },
+  async setMode(mode) { App.theme.modes[this.id()] = mode; this.apply(); if (Auth.canEdit() && !App.previewTheme) await Data.saveTheme(); else Prefs.set('snapMode', App.theme.modes); },
   toggleMode() { return this.setMode(this.mode() === 'dark' ? 'light' : 'dark'); },
   async activate(id) { App.theme.id = id; App.previewTheme = null; this.apply(); await Data.saveTheme(); }
 };
@@ -2055,13 +2415,22 @@ function genArt(seedText, { ratio = 4 / 3 } = {}) {
   }
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Abstract line drawing"><rect width="${W}" height="${H}" fill="var(--bg-2)"/>${g}</svg>`;
 }
+/* External cover sources: a pasted image URL, or a YouTube thumbnail. */
+function externalCover(it) {
+  if (!it || !it.data) return ''; const u = Sanitize.safeUrl(it.data.coverUrl || ''); if (/^https?:/i.test(u)) return u;
+  if (it.type === 'watch') { const id = youtubeId(it.data.url); if (id) return `https://i.ytimg.com/vi/${id}/hqdefault.jpg`; }
+  return '';
+}
+const extImg = (src, alt) => `<img src="${esc(src)}" alt="${esc(alt || '')}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'">`;
 function coverHTML(it, cls = '', ratio = 4 / 3) {
   if (it && it.cover && App.media.get(it.cover)) { const m = App.media.get(it.cover); return `<div class="cover-art ${cls}"><img data-media="${esc(it.cover)}" alt="${esc(m.alt || '')}" loading="lazy"></div>`; }
+  const ext = externalCover(it); if (ext) return `<div class="cover-art ${cls}">${extImg(ext, '')}</div>`;
   return `<div class="cover-art ${cls}" aria-hidden="true">${genArt((it && (it.id + it.title)) || 'cover', { ratio })}</div>`;
 }
 const BOOK_COLORS = ['#2F4A5E', '#6B2E35', '#2E4A3B', '#5A4A2F', '#3D3A5C', '#7A4B2A', '#24413F', '#4A2F45'];
 function bookCover(it) {
   if (it.cover && App.media.get(it.cover)) return `<div class="book-cover"><img data-media="${esc(it.cover)}" alt="Cover of ${esc(it.title)}" loading="lazy"></div>`;
+  const ext = externalCover(it); if (ext) return `<div class="book-cover">${extImg(ext, 'Cover of ' + it.title)}</div>`;
   const col = it.data.coverColor || BOOK_COLORS[hashStr(it.title) % BOOK_COLORS.length];
   return `<div class="book-cover" style="background:${esc(col)}"><div class="gen"><b>${esc(it.title)}</b><i>${esc(it.data.author || '')}</i></div></div>`;
 }
@@ -2155,7 +2524,7 @@ const Shell = {
           <li><a href="#/search">Search</a></li></ul></div>
       </div>
       <div class="ft-base"><span>© ${y} ${esc(s.name)}. ${esc(s.footer.text || '')}</span>
-        <span>${s.footer.colophon ? `Set in ${esc(Theme.def().fonts.display)} and ${esc(Theme.def().fonts.sans)}. ` : ''}<button type="button" data-act="shortcuts">Keyboard shortcuts</button>${App.mode === 'local' ? ` · <a href="#/studio" style="color:inherit">Studio</a>` : ''}</span></div>
+        <span>${s.footer.colophon ? `Set in ${esc(Theme.def().fonts.display)} and ${esc(Theme.def().fonts.sans)}. ` : ''}<button type="button" data-act="shortcuts">Keyboard shortcuts</button>${Auth.canEdit() ? ` · <a href="#/studio" style="color:inherit">Studio</a>` : ''}</span></div>
     </div></footer>`;
   },
   markNav(key) { $$('.nav a').forEach((a) => { if (a.dataset.nav === key) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }); },
@@ -2209,6 +2578,7 @@ const Meta = {
     if (it.type === 'research') return it.category || 'Research';
     if (it.type === 'project') return it.category || 'Project';
     if (it.type === 'book') return it.data.author || 'Book';
+    if (it.type === 'watch') return WKIND[it.data.kind] || 'Video';
     return TYPES[it.type].label;
   },
   bits(it) {
@@ -2218,6 +2588,7 @@ const Meta = {
     if (it.type === 'research') { b.push(`<span class="badge s-${it.data.researchStatus}"><span class="dot"></span>${RSTATUS[it.data.researchStatus] || ''}</span>`); if (it.data.period) b.push(`<span>${esc(it.data.period)}</span>`); }
     if (it.type === 'project') { b.push(`<span class="badge s-${it.data.projectStatus}"><span class="dot"></span>${PSTATUS[it.data.projectStatus] || ''}</span>`); if (it.data.stack.length) b.push(`<span>${esc(it.data.stack.slice(0, 3).join(', '))}</span>`); }
     if (it.type === 'book') { b.push(`<span>${SHELVES[it.data.shelf]}</span>`); }
+    if (it.type === 'watch') { b.push(`<span>${WSTATUS[it.data.status]}</span>`); if (it.data.creator) b.push(`<span>${esc(it.data.creator)}</span>`); }
     const ex = exampleBadge(it); if (ex) b.push(ex);
     return b.map((x) => (x.startsWith('<span class="badge') || x.startsWith('<time') || x.startsWith('<span') ? x : `<span>${x}</span>`)).join('');
   },
@@ -2253,7 +2624,70 @@ const List = {
   }
 };
 function emptyState(title, text) { return `<div class="empty"><h3>${esc(title)}</h3><p>${esc(text)}</p></div>`; }
-function pick(type, n) { const pub = Data.pub(type); return [...pub.filter((i) => i.featured), ...pub.filter((i) => !i.featured)].slice(0, n); }
+function pick(type, n, mode = 'featured') {
+  const pub = Data.pub(type); const order = Feature.list(); const rank = (i) => { const k = order.indexOf(i.id); return k < 0 ? 1e6 : k; };
+  const feat = pub.filter((i) => i.featured || order.includes(i.id)).sort((a, b) => rank(a) - rank(b));
+  if (mode === 'only') return feat.slice(0, n); if (mode === 'latest') return pub.slice(0, n);
+  return [...feat, ...pub.filter((i) => !feat.includes(i))].slice(0, n);
+}
+/* Bases-style cards (cover, title, properties) used by Watch and the Selected section */
+const Bases = {
+  ratio(it) { return it.type === 'book' || (it.type === 'watch' && isPosterKind(it.data.kind)) ? 'r-23' : it.type === 'watch' ? '' : 'r-43'; },
+  img(it) {
+    const r = this.ratio(it); const play = it.type === 'watch' && youtubeId(it.data.url) ? `<span class="play">${ICO.play}</span>` : '';
+    if (it.cover && App.media.get(it.cover)) return `<div class="bimg ${r}"><img data-media="${esc(it.cover)}" alt="" loading="lazy">${play}</div>`;
+    const ext = externalCover(it); if (ext) return `<div class="bimg ${r}">${extImg(ext, '')}${play}</div>`;
+    if (r === 'r-23') { const col = (it.data && it.data.coverColor) || BOOK_COLORS[hashStr(it.title) % BOOK_COLORS.length]; return `<div class="bimg r-23" style="background:${esc(col)}"><div class="gen-poster"><b>${esc(it.title)}</b></div></div>`; }
+    return `<div class="bimg ${r}">${genArt(it.id + it.title, { ratio: r === 'r-43' ? 4 / 3 : 16 / 9 })}${play}</div>`;
+  },
+  props(it) {
+    const d = it.data, rows = [];
+    if (it.type === 'watch') { rows.push(['Type', WKIND[d.kind]]); if (d.creator) rows.push([isPosterKind(d.kind) ? 'Director' : 'By', d.creator]); if (d.year) rows.push(['Year', d.year]); rows.push(['Status', WSTATUS[d.status]]); if (d.rating) rows.push(['Rating', '●'.repeat(d.rating) + '○'.repeat(5 - d.rating)]); }
+    else if (it.type === 'book') { rows.push(['Author', d.author]); rows.push(['Shelf', SHELVES[d.shelf]]); }
+    else { rows.push(['Section', TYPES[it.type].plural]); if (it.category) rows.push(['Filed', it.category]); rows.push(['Date', fmtDate(itemDate(it), 'short')]); }
+    return `<dl class="props">${rows.filter((r) => r[1]).map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>`;
+  },
+  card(it) { return `<a class="bcard" href="${itemUrl(it)}">${this.img(it)}<div class="bbody"><span class="ttl">${esc(it.title || 'Untitled')}</span>${this.props(it)}${it.isExample ? `<span>${exampleBadge(it)}</span>` : ''}</div></a>`; },
+  grid(items, cls = '') { return `<div class="bases ${cls}">${items.map((i) => this.card(i)).join('')}</div>`; }
+};
+/* Types the name in the home hero, holds it, erases it and types it again, quietly and in a loop.
+   Letters keep their place while hidden, so nothing on the page shifts. */
+const Typewriter = {
+  timer: 0, TYPE: 85, ERASE: 38, HOLD: 5200, GAP: 650,
+  start(root) {
+    this.stop(); const h = root && root.querySelector('.hero-name'); if (!h || App.settings.home.typewriter === false) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || (App.theme && App.theme.reduceMotion)) return;
+    h.setAttribute('aria-label', App.settings.name);
+    const chars = []; const walker = document.createTreeWalker(h, NodeFilter.SHOW_TEXT); const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+    for (const n of nodes) { const frag = document.createDocumentFragment(); for (const ch of n.nodeValue) { const sp = document.createElement('span'); sp.className = 'tw-c'; sp.setAttribute('aria-hidden', 'true'); sp.textContent = ch; frag.appendChild(sp); chars.push(sp); } n.replaceWith(frag); }
+    if (!chars.length) return;
+    h.classList.remove('reveal'); h.classList.add('typing'); h.style.opacity = '1';
+    const caret = document.createElement('span'); caret.className = 'tw-caret'; caret.setAttribute('aria-hidden', 'true'); chars[0].before(caret);
+    const at = (i) => (i === 0 ? chars[0].before(caret) : chars[i - 1].after(caret));
+    let i = 0; const later = (fn, ms) => { this.timer = setTimeout(() => { if (caret.isConnected) fn(); }, ms); };
+    const type = () => { caret.classList.add('busy'); chars[i].classList.add('on'); i++; at(i);
+      if (i < chars.length) later(type, chars[i - 1].textContent === ' ' ? this.TYPE * 2 : this.TYPE); else { caret.classList.remove('busy'); later(erase, this.HOLD); } };
+    const erase = () => { caret.classList.add('busy'); i--; chars[i].classList.remove('on'); at(i);
+      if (i > 0) later(erase, this.ERASE); else { caret.classList.remove('busy'); later(type, this.GAP); } };
+    later(type, 400);
+  },
+  stop() { clearTimeout(this.timer); this.timer = 0; }
+};
+/* A small Kepler orbit for the home page: the planet speeds up near the star, as it should. */
+const Orbit = {
+  raf: 0,
+  html() { if (App.settings.home.animation === false) return '';
+    return `<div class="orbit-anim reveal d3" aria-hidden="true"><svg viewBox="-100 -64 200 128"><ellipse cx="-42" cy="0" rx="70" ry="38.4" fill="none" stroke="currentColor" stroke-opacity=".28" stroke-width=".8"/><line class="o-r" x1="0" y1="0" x2="28" y2="0" stroke="var(--accent)" stroke-opacity=".45" stroke-width=".7"/><circle r="4.2" fill="var(--accent)"/><circle class="o-p" r="2.8" cx="28" cy="0" fill="currentColor"/></svg></div>`; },
+  start(root) {
+    this.stop(); const svg = root && root.querySelector('.orbit-anim svg'); if (!svg) return;
+    const p = svg.querySelector('.o-p'), r = svg.querySelector('.o-r'); const a = 70, e = 0.6, b = a * Math.sqrt(1 - e * e), T = 9000;
+    const place = (t) => { const M = (2 * Math.PI * t) / T; let E = M; for (let k = 0; k < 6; k++) E -= (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E)); const x = a * (Math.cos(E) - e), y = -b * Math.sin(E); p.setAttribute('cx', x.toFixed(2)); p.setAttribute('cy', y.toFixed(2)); r.setAttribute('x2', x.toFixed(2)); r.setAttribute('y2', y.toFixed(2)); };
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches || (App.theme && App.theme.reduceMotion);
+    if (still) { place(T * 0.38); return; }
+    const t0 = performance.now(); const tick = (now) => { place(now - t0); this.raf = requestAnimationFrame(tick); }; this.raf = requestAnimationFrame(tick);
+  },
+  stop() { if (this.raf) cancelAnimationFrame(this.raf); this.raf = 0; }
+};
 function relatedTo(it, n = 3, types) {
   const tags = new Set(it.tags.filter((t) => t !== 'example'));
   const pool = Data.pub().filter((o) => o.id !== it.id && o.type !== 'page' && (!types || types.includes(o.type)));
@@ -2270,16 +2704,17 @@ function skySVG() {
 
 const Pages = {
   _bind: null, _observers: [],
-  cleanup() { this._observers.forEach((o) => o.disconnect()); this._observers = []; this._bind = null; },
+  cleanup() { this._observers.forEach((o) => o.disconnect()); this._observers = []; this._bind = null; Orbit.stop(); Typewriter.stop(); },
   after(r) {
     const main = $('#main');
     if (this._bind) this._bind(main);
+    Orbit.start(main); if (!r.path.length) Typewriter.start(main);
     requestAnimationFrame(() => $$('.reveal', main).forEach((el) => el.classList.add('in')));
   },
   async dispatch(r) {
     computeNumbers();
     const [a, b] = r.path;
-    if (a && ['about', 'research', 'writings', 'notes', 'projects', 'library', 'cv', 'contact'].includes(a) && !navVisible(a)) return this.notFound();
+    if (a && ['about', 'research', 'writings', 'notes', 'projects', 'library', 'watch', 'cv', 'contact'].includes(a) && !navVisible(a)) return this.notFound();
     switch (a) {
       case undefined: return this.home();
       case 'about': return this.about();
@@ -2288,6 +2723,7 @@ const Pages = {
       case 'notes': return b ? this.note(b) : this.notes(r.query);
       case 'projects': return b ? this.project(b) : this.projects(r.query);
       case 'library': return b ? this.book(b) : this.library(r.query);
+      case 'watch': return b ? this.watchItem(b) : this.watch(r.query);
       case 'cv': return this.cv();
       case 'contact': return this.contact();
       case 'tag': return this.tag(b || '');
@@ -2305,59 +2741,63 @@ const Pages = {
     const q = (s.quotes || [])[0];
     const nowE = (s.now.entries || []).filter((e) => e.text);
     switch (t.hero) {
-      case 'paper': return `<section class="hero wrap"><h1 class="hero-name reveal">${esc(s.name)}<sup style="font-size:.4em;color:var(--accent)">1</sup></h1>
+      case 'paper': return `<section class="hero wrap hero-host"><h1 class="hero-name reveal">${esc(s.name)}<sup style="font-size:.4em;color:var(--accent)">1</sup></h1>
         <p class="affil reveal d1"><sup>1</sup> ${esc(s.institution)}${s.location ? ', ' + esc(s.location) : ''}</p><p class="affil reveal d1" style="margin-top:0">${esc(s.role)}</p>
         <div class="abstract-hero reveal d2"><b>Abstract</b>${intro}</div>
-        <p class="keywords reveal d3"><i>Keywords</i>${esc((s.interests || []).join(', '))}</p>${linksHTML}</section>`;
-      case 'chapter': return `<section class="hero wrap"><p class="prologue reveal">Prologue</p><h1 class="hero-name reveal d1">${esc(s.name)}</h1><p class="hero-tag reveal d2">${esc(s.tagline)}</p>
-        ${q ? `<blockquote class="epigraph reveal d3"><p>${esc(q.text)}</p><footer>${esc(q.source)}</footer></blockquote>` : ''}<div class="hero-intro measure reveal d3">${intro}</div>${linksHTML}</section>`;
+        <p class="keywords reveal d3"><i>Keywords</i>${esc((s.interests || []).join(', '))}</p>${Orbit.html()}${linksHTML}</section>`;
+      case 'chapter': return `<section class="hero wrap hero-host"><p class="prologue reveal">Prologue</p><h1 class="hero-name reveal d1">${esc(s.name)}</h1><p class="hero-tag reveal d2">${esc(s.tagline)}</p>
+        ${q ? `<blockquote class="epigraph reveal d3"><p>${esc(q.text)}</p><footer>${esc(q.source)}</footer></blockquote>` : ''}<div class="hero-intro measure reveal d3">${intro}</div>${Orbit.html()}${linksHTML}</section>`;
       case 'swiss': return `<section class="wrap"><div class="hero-swiss"><h1 class="hero-name reveal"><span>${esc(first)}</span><span>${esc(rest)}.</span></h1>
         <p class="hero-tag reveal d1">${esc(s.tagline)}</p><div class="hero-intro reveal d2">${intro}</div>
-        <div class="hero-facts reveal d3"><div><b>Institution</b>${esc(s.institutionShort || s.institution)}</div><div><b>Programme</b>${esc(s.role)}</div><div><b>Based in</b>${esc(s.location)}</div><div><b>Working on</b>${esc((s.interests || []).slice(0, 3).join(', '))}</div></div>${linksHTML}</div></section>`;
-      case 'observatory': return `<section class="hero-obs wrap"><div class="sky">${skySVG()}</div><p class="coord reveal">${esc(s.coords || '22.96° N, 88.52° E')}&ensp;${esc(s.institutionShort || '')}</p>
-        <h1 class="hero-name reveal d1">${esc(s.name)}</h1><p class="hero-tag reveal d2">${esc(s.tagline)}</p><div class="hero-intro reveal d3">${intro}</div>${linksHTML}</section>`;
+        <div class="hero-facts reveal d3"><div><b>Institution</b>${esc(s.institutionShort || s.institution)}</div><div><b>Programme</b>${esc(s.role)}</div><div><b>Based in</b>${esc(s.location)}</div><div><b>Working on</b>${esc((s.interests || []).slice(0, 3).join(', '))}</div></div>${Orbit.html()}${linksHTML}</div></section>`;
+      case 'observatory': return `<section class="hero-obs wrap hero-host"><div class="sky">${skySVG()}</div><p class="coord reveal">${esc(s.coords || '22.96° N, 88.52° E')}&ensp;${esc(s.institutionShort || '')}</p>
+        <h1 class="hero-name reveal d1">${esc(s.name)}</h1><p class="hero-tag reveal d2">${esc(s.tagline)}</p><div class="hero-intro reveal d3">${intro}</div>${Orbit.html()}${linksHTML}</section>`;
       case 'archive': {
         const counts = ['post', 'research', 'note', 'project', 'book'].filter((k) => navVisible(TYPES[k].route)).map((k) => [k, Data.pub(k).length]);
         const total = counts.reduce((a, [, n]) => a + n, 0);
         return `<section class="wrap"><div class="hero-archive"><div><div class="doc-label reveal"><span>Personal archive</span><span>Ref. ${esc(slugify(s.name).split('-').map((w) => w[0]).join('').toUpperCase())}/${new Date().getFullYear()}</span><span>${total} entries</span></div>
-          <h1 class="hero-name reveal d1">${esc(s.name)}</h1><p class="hero-tag reveal d2">${esc(s.tagline)}</p><div class="hero-intro reveal d3">${intro}</div>${linksHTML}</div>
+          <h1 class="hero-name reveal d1">${esc(s.name)}</h1><p class="hero-tag reveal d2">${esc(s.tagline)}</p><div class="hero-intro reveal d3">${intro}</div>${Orbit.html()}${linksHTML}</div>
           <table class="holdings reveal d3"><caption>Holdings</caption><tbody>${counts.map(([k, n]) => `<tr><td><a href="#/${TYPES[k].route}">${esc(navLabel(TYPES[k].route, TYPES[k].plural))}</a></td><td>${String(n).padStart(3, '0')}</td></tr>`).join('')}</tbody></table></div></section>`;
       }
       case 'modernist': return `<section class="hero-mod wrap"><h1 class="hero-name reveal"><span>${esc(first)}</span><span>${esc(rest)}</span></h1>
-        <div class="mod-grid"><p class="hero-tag reveal d1">${esc(s.tagline)}</p><div class="hero-intro reveal d2">${intro}</div></div>${linksHTML}</section>`;
-      case 'commonplace': return `<section class="wrap"><div class="hero-cp"><p class="cp-of reveal">The commonplace book of</p><h1 class="hero-name reveal d1">${esc(s.name)}</h1><p class="hero-tag reveal d2">${esc(s.tagline)}</p>
-        ${q ? `<blockquote class="cp-quote reveal d3"><span class="marg">a line worth keeping</span><p>${esc(q.text)}</p><footer>${esc(q.source)}</footer></blockquote>` : ''}<div class="hero-intro reveal d3">${intro}</div>${linksHTML}</div></section>`;
+        <div class="mod-grid"><p class="hero-tag reveal d1">${esc(s.tagline)}</p><div class="hero-intro reveal d2">${intro}</div></div>${Orbit.html()}${linksHTML}</section>`;
+      case 'commonplace': return `<section class="wrap hero-host"><div class="hero-cp"><p class="cp-of reveal">The commonplace book of</p><h1 class="hero-name reveal d1">${esc(s.name)}</h1><p class="hero-tag reveal d2">${esc(s.tagline)}</p>
+        ${q ? `<blockquote class="cp-quote reveal d3"><span class="marg">a line worth keeping</span><p>${esc(q.text)}</p><footer>${esc(q.source)}</footer></blockquote>` : ''}<div class="hero-intro reveal d3">${intro}</div>${Orbit.html()}${linksHTML}</div></section>`;
       case 'terminal': { const user = slugify(first); const host = slugify(s.location.split(',')[0] || 'home');
-        return `<section class="hero-term wrap"><div class="prompt reveal"><b>${esc(user)}@${esc(host)}</b>:~$ whoami</div><h1 class="hero-name reveal d1">${esc(s.name)}</h1><p class="hero-tag reveal d1">${esc(s.tagline)}</p>
+        return `<section class="hero-term wrap hero-host"><div class="prompt reveal"><b>${esc(user)}@${esc(host)}</b>:~$ whoami</div><h1 class="hero-name reveal d1">${esc(s.name)}</h1><p class="hero-tag reveal d1">${esc(s.tagline)}</p>
         ${nowE.length ? `<div class="prompt reveal d2" style="margin-top:2rem"><b>${esc(user)}@${esc(host)}</b>:~$ cat now.txt</div><ul class="term-out reveal d2">${nowE.map((e) => `<li><span>${esc(e.label.toLowerCase())}</span><span>${esc(e.text)}</span></li>`).join('')}</ul>` : ''}
-        <div class="hero-intro measure reveal d3" style="margin-top:2rem">${intro}</div>${linksHTML}</section>`; }
+        <div class="hero-intro measure reveal d3" style="margin-top:2rem">${intro}</div>${Orbit.html()}${linksHTML}</section>`; }
       case 'atelier': { const proj = pick('project', 1)[0]; const img = s.heroImage && App.media.get(s.heroImage);
         const fig = img ? `<div class="cover-art"><img data-media="${esc(s.heroImage)}" alt="${esc(img.alt || '')}"></div><figcaption>${esc(img.caption || '')}</figcaption>`
           : proj ? `<a href="${itemUrl(proj)}" style="text-decoration:none">${coverHTML(proj, '', 4 / 5)}<figcaption>${esc(proj.title)}</figcaption></a>` : `<div class="cover-art">${genArt(s.name, { ratio: 4 / 5 })}</div>`;
-        return `<section class="wrap hero-atelier"><div><h1 class="hero-name reveal">${esc(s.name)}</h1><p class="hero-tag reveal d1">${esc(s.tagline)}</p><div class="hero-intro reveal d2">${intro}</div>${linksHTML}</div><figure class="reveal d2" style="margin:0">${fig}</figure></section>`; }
-      default: return `<section class="hero wrap"><div class="dateline"><span>${esc(s.location)}</span><span>${fmtDate(new Date().toISOString())}</span><span>${esc(s.institutionShort || '')}</span></div>
-        <h1 class="hero-name reveal">${esc(s.name)}</h1><p class="hero-tag reveal d1">${esc(s.tagline)}</p><div class="hero-intro reveal d2">${intro}</div>${linksHTML}</section>`;
+        return `<section class="wrap hero-atelier"><div><h1 class="hero-name reveal">${esc(s.name)}</h1><p class="hero-tag reveal d1">${esc(s.tagline)}</p><div class="hero-intro reveal d2">${intro}</div>${Orbit.html()}${linksHTML}</div><figure class="reveal d2" style="margin:0">${fig}</figure></section>`; }
+      default: return `<section class="hero wrap hero-host"><div class="dateline"><span>${esc(s.location)}</span><span>${fmtDate(new Date().toISOString())}</span><span>${esc(s.institutionShort || '')}</span></div>
+        <h1 class="hero-name reveal">${esc(s.name)}</h1><p class="hero-tag reveal d1">${esc(s.tagline)}</p><div class="hero-intro reveal d2">${intro}</div>${Orbit.html()}${linksHTML}</section>`;
     }
   },
   secHead(title, code, href, more, marg = '') { return `<div class="sec-hd"><h2 data-code="${esc(code)}">${esc(title)}</h2>${marg ? `<span class="marg">${esc(marg)}</span>` : ''}${href ? `<a class="more" href="${href}">${esc(more)}</a>` : ''}</div>`; },
-  homeSection(key) {
-    const s = App.settings; const n = s.home.perSection || 3; const v = List.variant();
+  homeSection(key, cfg = {}) {
+    const s = App.settings; const n = s.home.perSection || 3; const v = List.variant(); const mode = cfg.mode || 'featured';
     const sec = (inner) => `<section class="sec wrap" aria-labelledby="h-${key}">${inner.replace('<h2 ', `<h2 id="h-${key}" `)}</section>`;
     switch (key) {
       case 'now': { const e = (s.now.entries || []).filter((x) => x.text); if (!e.length || Theme.def().hero === 'terminal') return '';
         return sec(`${this.secHead('Now', 'CUR', '', '', s.now.updated ? 'updated ' + fmtDate(s.now.updated, 'month') : '')}<dl class="now">${e.map((x) => `<div class="now-row"><dt>${esc(x.label)}</dt><dd>${esc(x.text)}</dd></div>`).join('')}</dl>${s.now.updated ? `<p class="t-meta" style="margin-top:.8rem">Updated ${fmtDate(s.now.updated)}</p>` : ''}`); }
-      case 'research': { if (!navVisible('research')) return ''; const it = pick('research', n); if (!it.length) return '';
+      case 'research': { if (!navVisible('research')) return ''; const it = pick('research', n, mode); if (!it.length) return '';
         return sec(`${this.secHead('Research', 'RES', '#/research', 'All research', it.length + ' lines of inquiry')}${List.render(it, v)}`); }
       case 'writings': { if (!navVisible('writings')) return ''; const lead = s.home.lead && Data.byId(s.home.lead) && isPublic(Data.byId(s.home.lead)) ? Data.byId(s.home.lead) : null;
-        let it = pick('post', n + (lead ? 0 : 1)); if (lead) it = [lead, ...it.filter((x) => x.id !== lead.id)].slice(0, n + 1); if (!it.length) return '';
+        let it = pick('post', n + (lead ? 0 : 1), mode); if (lead) it = [lead, ...it.filter((x) => x.id !== lead.id)].slice(0, n + 1); if (!it.length) return '';
         return sec(`${this.secHead('Latest writing', 'ESS', '#/writings', 'All writings')}${List.render(it, v, { lead: true })}`); }
-      case 'projects': { if (!navVisible('projects')) return ''; const it = pick('project', n); if (!it.length) return '';
+      case 'projects': { if (!navVisible('projects')) return ''; const it = pick('project', n, mode); if (!it.length) return '';
         return sec(`${this.secHead('Projects', 'PRJ', '#/projects', 'All projects', 'things built')}${List.render(it, v === 'editorial' ? 'visual' : v)}`); }
-      case 'notes': { if (!navVisible('notes')) return ''; const it = Data.pub('note').sort((a, b) => b.updated.localeCompare(a.updated)).slice(0, n); if (!it.length) return '';
+      case 'notes': { if (!navVisible('notes')) return ''; const it = mode === 'latest' ? Data.pub('note').sort((a, b) => b.updated.localeCompare(a.updated)).slice(0, n) : pick('note', n, mode); if (!it.length) return '';
         return sec(`${this.secHead('Recent notes', 'NTE', '#/notes', 'The garden', 'still growing')}${['index', 'grid', 'rows'].includes(v) ? List.render(it, v) : `<div class="garden">${it.map((x) => this.noteCard(x)).join('')}</div>`}`); }
-      case 'library': { if (!navVisible('library')) return ''; const books = Data.pub('book'); if (!books.length) return '';
+      case 'library': { if (!navVisible('library')) return ''; const books = mode === 'only' ? pick('book', 6, 'only') : Data.pub('book'); if (!books.length) return '';
         const ordered = [...books.filter((b) => b.data.shelf === 'reading'), ...books.filter((b) => b.data.shelf === 'finished'), ...books.filter((b) => b.data.shelf === 'wishlist')].slice(0, 6);
         return sec(`${this.secHead('On the shelf', 'LIB', '#/library', 'The library', 'currently reading')}<div class="shelf">${ordered.map((b) => this.bookTile(b)).join('')}</div>`); }
+      case 'featured': { const ids = Feature.list(); const it = ids.map((id) => Data.byId(id)).filter((x) => x && isPublic(x)).slice(0, 8); if (!it.length) return '';
+        return sec(`${this.secHead('Selected', 'SEL', '', '', 'chosen by hand')}${Bases.grid(it)}`); }
+      case 'watch': { if (!navVisible('watch')) return ''; const it = pick('watch', Math.max(n, 4), mode); if (!it.length) return '';
+        return sec(`${this.secHead('Watching', 'WCH', '#/watch', 'Everything watched', 'on the screen')}${Bases.grid(it, it.every((x) => isPosterKind(x.data.kind)) ? 'posters' : '')}`); }
       case 'quotes': { const q = (s.quotes || []).filter((x) => x.text); const show = ['chapter', 'commonplace'].includes(Theme.def().hero) ? q.slice(1) : q; if (!show.length) return '';
         return sec(`${this.secHead('Kept lines', 'QTE', '', '')}${show.map((x) => `<blockquote class="quote-block"><p>${esc(x.text)}</p>${x.source ? `<footer>${esc(x.source)}</footer>` : ''}</blockquote>`).join('<div style="height:2.5rem"></div>')}`); }
     }
@@ -2365,7 +2805,7 @@ const Pages = {
   },
   home() {
     setMeta({});
-    const secs = App.settings.home.sections.filter((x) => x.visible).map((x) => this.homeSection(x.key)).join('');
+    const secs = App.settings.home.sections.filter((x) => x.visible).map((x) => this.homeSection(x.key, x)).join('');
     return this.hero() + secs;
   },
   noteCard(it) { return `<a class="note-card" href="${itemUrl(it)}"><span class="meta-row t-meta"><span class="badge s-${it.data.growth}"><span class="dot"></span>${GROWTH[it.data.growth]}</span>${exampleBadge(it)}</span><span class="ttl">${esc(it.title)}</span><p class="dek">${esc(excerptOf(it, 140))}</p><span class="meta-row t-meta"><span>Tended ${fmtDate(it.updated, 'short')}</span></span></a>`; },
@@ -2514,7 +2954,7 @@ const Pages = {
     const links = (d.links || []).filter((l) => l.url && Sanitize.safeUrl(l.url));
     const extra = `${d.timeline.length ? `<section style="margin-top:3rem"><h2 class="t-label" style="margin-bottom:1rem">Timeline</h2><ol class="timeline">${d.timeline.map((t) => `<li><span class="when">${esc(t.when)}</span>${esc(t.what)}</li>`).join('')}</ol></section>` : ''}
       ${Render.refs(d.references)}
-      ${links.length || atts.length ? `<section style="margin-top:2.5rem"><h2 class="t-label" style="margin-bottom:.8rem">Papers and files</h2><div class="attach">${links.map((l) => `<a class="btn btn-ghost" href="${esc(Sanitize.safeUrl(l.url))}" target="_blank" rel="noopener">${ICO.ext} ${esc(l.label || 'Link')}</a>`).join('')}${atts.map((m) => `<a class="btn btn-ghost" href="${Media.url(m.id)}" download="${esc(m.name)}">${ICO.download} ${esc(m.name)}</a>`).join('')}</div></section>` : ''}
+      ${links.length || atts.length ? `<section style="margin-top:2.5rem"><h2 class="t-label" style="margin-bottom:.8rem">Papers and files</h2><div class="attach">${links.map((l) => `<a class="btn btn-ghost" href="${esc(Sanitize.safeUrl(l.url))}" target="_blank" rel="noopener">${ICO.ext} ${esc(l.label || 'Link')}</a>`).join('')}${atts.map((m) => `<a class="btn btn-ghost" data-dl href="${Media.url(m.id)}" download="${esc(m.name)}">${ICO.download} ${esc(m.name)}</a>`).join('')}</div></section>` : ''}
       <footer class="article-end">${this.tagsHTML(it)}${this.shareBar(it)}</footer>`;
     const body = this.articleBody(it, extra); const rel = relatedTo(it, 3);
     this._bind = (main) => this.bindToc(main);
@@ -2606,6 +3046,59 @@ const Pages = {
       ${rel.length ? `<section class="related"><div class="sec-hd"><h2>Essays and notes on this book</h2></div>${List.render(rel)}</section>` : ''}</article>`;
   },
 
+  /* ---------- Watch (videos, films, series, lectures) ---------- */
+  watch(q) {
+    setMeta({ title: navLabel('watch', 'Watch'), description: 'Videos, films and lectures worth the time.' });
+    const all = Data.pub('watch'); const st = { view: q.view || Prefs.get('watchView', 'cards'), kind: q.kind || '', status: q.status || '', sort: q.sort || 'recent', q: '' };
+    this._bind = (main) => {
+      const box = $('#wt-list', main);
+      const draw = () => {
+        let list = all.filter((w) => (!st.kind || w.data.kind === st.kind) && (!st.status || w.data.status === st.status) && Search.match(w, st.q));
+        if (st.sort === 'rating') list.sort((a, b) => (b.data.rating || 0) - (a.data.rating || 0)); if (st.sort === 'year') list.sort((a, b) => String(b.data.year || '').localeCompare(String(a.data.year || '')));
+        if (st.sort === 'title') list.sort((a, b) => a.title.localeCompare(b.title));
+        if (!list.length) box.innerHTML = emptyState(all.length ? 'Nothing matches' : 'Nothing here yet', all.length ? 'Change the filters to see more.' : 'Videos, films and lectures appear here once they are added in the Studio.');
+        else if (st.view === 'table') box.innerHTML = `<table class="lv-index"><thead><tr><th scope="col"><span class="sr-only">Cover</span></th><th scope="col">Title</th><th scope="col" class="hide-sm">Type</th><th scope="col" class="hide-sm">By</th><th scope="col" class="hide-sm">Year</th><th scope="col">Status</th><th scope="col" class="hide-sm">Rating</th></tr></thead><tbody>${list.map((w) => { const src = w.cover && App.media.get(w.cover) ? '' : externalCover(w); const pr = isPosterKind(w.data.kind) ? 'r-23' : '';
+            return `<tr><td>${w.cover && App.media.get(w.cover) ? `<img class="thumb ${pr}" data-media="${esc(w.cover)}" alt="">` : src ? `<img class="thumb ${pr}" src="${esc(src)}" alt="" referrerpolicy="no-referrer" loading="lazy">` : `<span class="thumb ${pr}"></span>`}</td><td class="ttl"><a href="${itemUrl(w)}">${esc(w.title)}</a> ${exampleBadge(w)}</td><td class="hide-sm muted">${WKIND[w.data.kind]}</td><td class="hide-sm muted">${esc(w.data.creator)}</td><td class="hide-sm dt">${esc(w.data.year)}</td><td class="muted">${WSTATUS[w.data.status]}</td><td class="hide-sm rating">${w.data.rating ? '●'.repeat(w.data.rating) : ''}</td></tr>`; }).join('')}</tbody></table>`;
+        else { const vids = list.filter((w) => !isPosterKind(w.data.kind)), films = list.filter((w) => isPosterKind(w.data.kind));
+          box.innerHTML = (vids.length && films.length ? `<h2 class="group-hd">Videos and lectures</h2>` : '') + (vids.length ? Bases.grid(vids) : '') + (vids.length && films.length ? `<h2 class="group-hd">Films and series</h2>` : '') + (films.length ? Bases.grid(films, 'posters') : ''); }
+        Render.enhance(box);
+        $$('[data-kind]', main).forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.kind === st.kind)));
+        $$('[data-v]', main).forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.v === st.view)));
+      };
+      $$('[data-kind]', main).forEach((c) => c.addEventListener('click', () => { st.kind = st.kind === c.dataset.kind ? '' : c.dataset.kind; draw(); }));
+      $$('[data-v]', main).forEach((c) => c.addEventListener('click', () => { st.view = c.dataset.v; Prefs.set('watchView', st.view); draw(); }));
+      $('#wt-status', main).addEventListener('change', (e) => { st.status = e.target.value; draw(); });
+      $('#wt-sort', main).addEventListener('change', (e) => { st.sort = e.target.value; draw(); });
+      $('#wt-q', main).addEventListener('input', debounce((e) => { st.q = e.target.value; draw(); }, 150));
+      draw();
+    };
+    const cnt = (k) => all.filter((w) => w.data.kind === k).length; const watched = all.filter((w) => w.data.status === 'watched').length;
+    return `<div class="wrap"><header class="page-hd"><h1>${esc(navLabel('watch', 'Watch'))}</h1><p class="t-lede">Videos, films, series and lectures: what I am watching, what I have watched, and what is next.</p>
+      ${all.length ? `<div class="lib-stats"><div><b>${all.length}</b>${all.length === 1 ? 'entry' : 'entries'}</div><div><b>${watched}</b>watched</div><div><b>${all.filter((w) => w.data.status === 'watching').length}</b>in progress</div><div><b>${all.filter((w) => w.data.status === 'towatch').length}</b>to watch</div></div>` : ''}</header>
+      <div class="toolbar-row"><div class="seg" role="group" aria-label="View"><button type="button" data-v="cards">Cards</button><button type="button" data-v="table">Table</button></div>
+        <div class="chips" role="group" aria-label="Filter by type"><button class="chip" type="button" data-kind="">All<span class="n">${all.length}</span></button>${Object.entries(WKIND).filter(([k]) => cnt(k)).map(([k, l]) => `<button class="chip" type="button" data-kind="${k}">${l}<span class="n">${cnt(k)}</span></button>`).join('')}</div>
+        <div class="search-field" style="min-width:12rem">${ICO.search}<input class="input" id="wt-q" type="search" placeholder="Search" aria-label="Search videos and films"></div>
+        <select class="select" id="wt-status" aria-label="Status" style="width:auto;border-radius:999px"><option value="">Any status</option>${Object.entries(WSTATUS).map(([k, l]) => `<option value="${k}" ${st.status === k ? 'selected' : ''}>${l}</option>`).join('')}</select>
+        <select class="select" id="wt-sort" aria-label="Sort" style="width:auto;border-radius:999px"><option value="recent">Recently added</option><option value="rating">Highest rated</option><option value="year">Newest release</option><option value="title">Title A–Z</option></select></div>
+      <div id="wt-list"></div></div>`;
+  },
+  watchItem(slug) {
+    const it = Data.bySlug('watch', slug); if (!it || !isPublic(it)) return this.notFound();
+    const d = it.data; setMeta({ title: it.title, description: excerptOf(it, 160) });
+    const yt = youtubeId(d.url); const poster = !yt && isPosterKind(d.kind);
+    const r = Render.blocks(it.body); const rel = relatedTo(it, 4);
+    const link = Sanitize.safeUrl(d.url); const stars = d.rating ? `<span class="rating" aria-label="${d.rating} out of 5">${'●'.repeat(d.rating)}<span class="off">${'●'.repeat(5 - d.rating)}</span></span>` : '';
+    const facts = `<dl class="facts">${[['Type', WKIND[d.kind]], [isPosterKind(d.kind) ? 'Director' : 'By', d.creator], ['Year', d.year], ['Status', WSTATUS[d.status]], ['Watched', d.watchedAt ? fmtDate(d.watchedAt) : '']].filter((x) => x[1]).map(([k, v]) => `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>`;
+    return `<article class="wrap"><header class="watch-hd ${poster ? 'poster' : ''}">${poster ? `<div style="width:min(14rem,60vw)">${Bases.img(it)}</div>` : ''}<div>
+        <div class="crumbs meta-row t-meta"><a class="quiet-link" href="#/watch">${esc(navLabel('watch', 'Watch'))}</a><span>${WKIND[d.kind]}</span>${exampleBadge(it)}</div>
+        <h1 class="t-h1" style="margin-top:1rem">${esc(it.title)}</h1>${it.subtitle ? `<p class="t-lede" style="font-style:italic;margin-top:.4rem">${esc(it.subtitle)}</p>` : ''}${facts}
+        <div class="meta-row" style="margin-top:1rem">${stars}${link && !yt ? `<a class="btn btn-ghost" href="${esc(link)}" target="_blank" rel="noopener">${ICO.ext} Open link</a>` : ''}${yt ? `<a class="btn btn-ghost" href="https://www.youtube.com/watch?v=${yt}" target="_blank" rel="noopener">${ICO.ext} Watch on YouTube</a>` : ''}</div></div></header>
+      ${yt ? `<div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/${yt}" title="${esc(it.title)}" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>` : !poster ? `<div style="margin-bottom:2.5rem;max-width:52rem">${Bases.img(it)}</div>` : ''}
+      ${r.html ? `<div class="prose">${r.html}</div>${Render.footnotes(r.notes)}` : ''}
+      <div style="margin-top:2rem">${this.tagsHTML(it)}</div>
+      ${rel.length ? `<section class="related"><div class="sec-hd"><h2>Related</h2></div>${Bases.grid(rel)}</section>` : ''}</article>`;
+  },
+
   /* ---------- About ---------- */
   about() {
     const s = App.settings; const page = App.items.find((i) => i.type === 'page' && i.slug === 'about');
@@ -2641,7 +3134,7 @@ const Pages = {
     };
     return `<div class="wrap"><article class="cv"><header class="cv-hd"><h1>${esc(s.name)}</h1><p class="t-lede" style="margin:0">${esc(rs.headline)}</p>
       <div class="cv-contact">${email ? `<a href="mailto:${esc(email)}">${esc(email)}</a>` : ''}${s.location ? `<span>${esc(s.location)}</span>` : ''}${socials.map((x) => `<a href="${esc(Sanitize.safeUrl(x.url))}" target="_blank" rel="noopener">${esc(x.label)}</a>`).join('')}</div>
-      <div class="cv-actions">${pdf ? `<a class="btn" href="${Media.url(pdf.id)}" download="${esc(slugify(s.name).replace(/-/g, '_'))}_CV.pdf">${ICO.download} Download CV (PDF, ${fmtBytes(pdf.size)})</a>` : ''}<button class="btn ${pdf ? 'btn-ghost' : ''}" type="button" data-print>${ICO.print} Print this page</button></div></header>
+      <div class="cv-actions">${pdf ? `<a class="btn" data-dl href="${Media.url(pdf.id)}" download="${esc(slugify(s.name).replace(/-/g, '_'))}_CV.pdf">${ICO.download} Download CV (PDF, ${fmtBytes(pdf.size)})</a>` : ''}<button class="btn ${pdf ? 'btn-ghost' : ''}" type="button" data-print>${ICO.print} Print this page</button></div></header>
       ${rs.profile ? `<section class="cv-sec"><h2>Profile</h2><div class="cv-text">${paras(rs.profile)}</div></section>` : ''}
       ${rs.sections.map(sec).join('')}
       ${email || socials.length ? `<section class="cv-sec"><h2>Contact</h2><div class="cv-inline" style="font-family:var(--f-sans);font-size:.92rem">${email ? `<a class="link" href="mailto:${esc(email)}">${esc(email)}</a>` : ''}${socials.map((x) => `<a class="link" href="${esc(Sanitize.safeUrl(x.url))}" target="_blank" rel="noopener">${esc(x.label)}</a>`).join('')}</div></section>` : ''}
@@ -2665,7 +3158,7 @@ const Pages = {
     };
     return `<div class="wrap"><header class="page-hd"><h1>${esc(navLabel('contact', 'Contact'))}</h1><p class="t-lede">For research, collaboration, a reading recommendation, or a correction to something written here.</p></header>
       ${emails.length ? emails.map((e) => `<div class="contact-email"><a href="mailto:${esc(e)}">${esc(e)}</a><button class="btn btn-ghost" type="button" data-copy="${esc(e)}">${ICO.copy} Copy</button></div>`).join('<div style="height:1rem"></div>')
-        : `<p class="muted" style="font-family:var(--f-sans);font-size:.92rem">Contact details have not been added yet.${App.mode === 'local' ? ' Add them in the Studio under Settings, then Contact.' : ''}</p>`}
+        : `<p class="muted" style="font-family:var(--f-sans);font-size:.92rem">Contact details have not been added yet.${Auth.canEdit() ? ' Add them in the Studio under Settings, then Contact.' : ''}</p>`}
       ${socials.length ? `<ul class="socials">${socials.map((x) => `<li><a href="${esc(Sanitize.safeUrl(x.url))}" target="_blank" rel="noopener me"><span>${esc(x.label)}</span><span>${esc(x.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))}</span></a></li>`).join('')}</ul>` : ''}
       ${ep ? `<form class="form-grid" id="c-form"><label>Your name<input class="input" name="name" required autocomplete="name"></label><label>Your email<input class="input" type="email" name="email" required autocomplete="email"></label><label>Message<textarea class="textarea" name="message" rows="6" required></textarea></label><div><button class="btn" type="submit">Send message</button></div></form>` : ''}
     </div>`;
@@ -2729,9 +3222,9 @@ const Palette = {
     const cmds = [
       ...nav.map((n) => ({ grp: 'Go to', label: n.t, run: () => Router.go(n.h), ty: 'Page' })),
       { grp: 'Actions', label: Theme.mode() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode', run: () => Theme.toggleMode().then(() => Shell.refresh()), ty: 'Display' },
-      ...THEMES.map((t) => ({ grp: 'Actions', label: `Use theme: ${t.name}`, run: async () => { if (App.mode === 'local') { await Theme.activate(t.id); } else { App.theme.id = t.id; Theme.apply(); } Shell.refresh(); UI.toast(`${t.name} applied`); }, ty: 'Theme' })),
-      ...(App.mode === 'local' ? [{ grp: 'Studio', label: 'Open the Studio', run: () => Router.go('#/studio'), ty: 'Studio' },
-        ...['post', 'note', 'research', 'project', 'book'].map((t) => ({ grp: 'Studio', label: `New ${TYPES[t].label.toLowerCase()}`, run: () => Studio.create(t), ty: 'Studio' }))] : []),
+      ...THEMES.map((t) => ({ grp: 'Actions', label: `Use theme: ${t.name}`, run: async () => { if (Auth.canEdit()) { await Theme.activate(t.id); } else { App.theme.id = t.id; Theme.apply(); } Shell.refresh(); UI.toast(`${t.name} applied`); }, ty: 'Theme' })),
+      ...(Auth.canEdit() ? [{ grp: 'Studio', label: 'Open the Studio', run: () => Router.go('#/studio'), ty: 'Studio' },
+        ...['post', 'note', 'research', 'project', 'book', 'watch'].map((t) => ({ grp: 'Studio', label: `New ${TYPES[t].label.toLowerCase()}`, run: () => Studio.create(t), ty: 'Studio' }))] : []),
       { grp: 'Actions', label: 'Show keyboard shortcuts', run: () => showShortcuts(), ty: 'Help' }
     ];
     const back = document.createElement('div'); back.className = 'modal-back';
@@ -2798,6 +3291,8 @@ document.addEventListener('click', async (e) => {
   if (link && !e.defaultPrevented && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && !link.hasAttribute('download') && !link.dataset.scroll) {
     e.preventDefault(); Router.go(link.getAttribute('href')); return;
   }
+  const dl = e.target.closest('a[data-dl][download]');
+  if (dl && /^https?:/.test(dl.href)) { e.preventDefault(); try { const r = await fetch(dl.href); if (!r.ok) throw new Error(); download(await r.blob(), dl.getAttribute('download')); } catch (_) { window.open(dl.href, '_blank', 'noopener'); } return; }
   const a = e.target.closest('[data-act],[data-scroll],[data-share],[data-copylink],[data-print],.copy-code,[data-skip]');
   if (a) {
     if (a.dataset.skip !== undefined) { e.preventDefault(); const m = $('#main'); m && m.focus(); return; }
@@ -2866,7 +3361,7 @@ const Editor = {
     this.it.body.forEach((b) => { if (TEXT_TYPES.has(b.type)) b.html = Sanitize.inline(b.html || ''); });
     this.host = host; this.hist = []; this.hi = -1; this.dirty = false; this.preview = false; this.lastSaved = item.updated;
     this.metaOpen = innerWidth >= 1180;
-    const draft = App.mode === 'local' ? await Data.getDraft(item.id) : null;
+    const draft = Auth.canEdit() ? await Data.getDraft(item.id) : null;
     const same = (a, b) => JSON.stringify([a.title, a.subtitle, a.body]) === JSON.stringify([b.title, b.subtitle, b.body]);
     this.recovery = draft && draft.item && !same(draft.item, item) && draft.savedAt > (item.updated || '') ? draft : null;
     this.renderShell(); this.push();
@@ -3023,33 +3518,38 @@ const Editor = {
   undo() { if (this.pushD) this.pushD.flush(); if (this.hi > 0) { this.hi--; this.restore(this.hist[this.hi]); } },
   redo() { if (this.hi < this.hist.length - 1) { this.hi++; this.restore(this.hist[this.hi]); } },
   setStatus(state, text) {
-    const s = $('#ed-status'); if (!s) return; s.classList.toggle('dirty', state === 'dirty');
+    const s = $('#ed-status'); if (!s || !this.it) return; s.classList.toggle('dirty', state === 'dirty');
     const pub = (Data.byId(this.it.id) || {}).status === 'published';
     $('.tx', s).textContent = text || (state === 'dirty' ? 'Editing…' : state === 'working' ? `Changes kept locally ${relTime(nowISO())}. Update to publish them.` : `Saved ${relTime(this.lastSaved)}`);
     if (state === 'working') s.classList.add('dirty');
     void pub;
   },
-  clean() {
-    const it = this.it; it.title = it.title.trim(); it.subtitle = (it.subtitle || '').trim();
+  clean(it = this.it) { it.title = it.title.trim(); it.subtitle = (it.subtitle || '').trim();
     it.body = it.body.map((b) => { if (TEXT_TYPES.has(b.type)) b.html = Sanitize.inline(b.html || ''); if (b.type === 'table') b.rows = b.rows.map((r) => r.map((c) => Sanitize.inline(c))); return b; });
     return it;
   },
   /* Autosave: unpublished items are committed directly; published items keep a working copy so the live version does not change until "Update". */
   async autosave() {
-    if (!this.it || App.mode !== 'local') return;
-    const live = Data.byId(this.it.id); const isLive = live && live.status === 'published';
-    this.clean(); await Data.putDraft(this.it);
-    if (!isLive && this.it.status !== 'published') { if (!this.it.title && blocksText(this.it.body).trim() === '' && !live) { this.setStatus('dirty', 'Start writing; it saves automatically'); return; }
-      await Data.saveItem(JSON.parse(JSON.stringify(this.it))); this.lastSaved = nowISO(); this.dirty = false; this.setStatus('saved'); Studio.updateCounts(); }
-    else this.setStatus('working');
+    const it = this.it; if (!it || !Auth.canEdit()) return;
+    try { await this.autosaveInner(it); } catch (e) { if (this.it === it) this.setStatus('dirty', 'Not saved: ' + e.message); }
+  },
+  async autosaveInner(it) {
+    const live = Data.byId(it.id); const isLive = live && live.status === 'published';
+    this.clean(it); await Data.putDraft(it);
+    if (!isLive && it.status !== 'published') {
+      if (!it.title && blocksText(it.body).trim() === '' && !live) { if (this.it === it) this.setStatus('dirty', 'Start writing; it saves automatically'); return; }
+      await Data.saveItem(JSON.parse(JSON.stringify(it))); if (this.it === it) { this.lastSaved = nowISO(); this.dirty = false; this.setStatus('saved'); } Studio.updateCounts(); }
+    else if (this.it === it) this.setStatus('working');
   },
   async commit(status) {
     if (this.autosaveD) this.autosaveD.cancel();
     const it = this.clean(); if (!it.title) { UI.toast('Add a title first.', 'err'); $('#ed-title').focus(); return false; }
+    const prevStatus = it.status;
     if (status) it.status = status;
     if (status === 'published' && !it.publishedAt) it.publishedAt = it.scheduledAt || nowISO();
     if (!it.slug) it.slug = Data.uniqueSlug(it, it.title);
-    await Data.saveItem(JSON.parse(JSON.stringify(it))); await Data.dropDraft(it.id);
+    try { await Data.saveItem(JSON.parse(JSON.stringify(it))); } catch (e) { it.status = prevStatus; UI.toast('Not saved: ' + e.message, 'err'); this.setStatus('dirty', 'Not saved'); return false; }
+    await Data.dropDraft(it.id);
     this.lastSaved = it.updated = (Data.byId(it.id) || it).updated; this.dirty = false;
     this.renderShellTop(); this.setStatus('saved'); Studio.updateCounts(); return true;
   },
@@ -3378,14 +3878,22 @@ const Editor = {
       ${it.type !== 'page' ? f('Publication date', inp('publishedAt', dt(it.publishedAt), '', 'date'), 'Shown on the page. Set automatically on first publish.') : ''}
       ${it.type !== 'page' ? f('Schedule for', inp('scheduledAt', dtl(it.scheduledAt), '', 'datetime-local'), 'Published entries with a future time stay hidden until then. In a static snapshot they are left out until you export again after that time.') : ''}
       ${f('URL', `<div class="st-row" style="flex-wrap:nowrap"><input class="st-in mono" data-m="slug" value="${esc(it.slug)}" placeholder="from the title"><button class="st-btn sm" type="button" data-mact="slug" title="Regenerate from title">Reset</button></div>`, esc(it.type === 'page' ? '#/' + (it.slug || '') : `#/${TYPES[it.type].route}/${it.slug || '…'}`))}
-      ${it.type !== 'page' ? `<label class="st-check"><input type="checkbox" class="st-toggle" data-m="featured" ${it.featured ? 'checked' : ''}> Feature on the home page</label>` : ''}
+      ${it.type !== 'page' ? `<label class="st-check"><input type="checkbox" class="st-toggle" data-m="featured" ${it.featured || Feature.has(it.id) ? 'checked' : ''}> Feature on the home page</label>` : ''}
       ${it.isExample ? `<label class="st-check"><input type="checkbox" class="st-toggle" data-m="isExample" checked> Marked as example content</label>` : ''}`;
     if (it.type !== 'page') h += `<h4>Organisation</h4>
       ${f(it.type === 'research' ? 'Research area' : it.type === 'project' ? 'Kind' : 'Category', `<select class="st-sel" data-m="category"><option value="">None</option>${[...new Set([...cats, it.category].filter(Boolean))].map((c) => `<option ${c === it.category ? 'selected' : ''}>${esc(c)}</option>`).join('')}<option value="__new">Add a category…</option></select>`)}
       <div class="st-field"><span class="st-label">Tags</span><div id="m-tags"></div><small>Press Enter or comma to add a tag.</small></div>
       ${f('Excerpt', `<textarea class="st-ta" data-m="excerpt" rows="3" placeholder="Used in lists and search results. Leave empty to use the opening lines.">${esc(it.excerpt)}</textarea>`)}
       ${f('Author', inp('author', it.author, s.author.name))}`;
-    h += `<h4>${it.type === 'book' ? 'Cover' : 'Cover image'}</h4><div id="m-cover"></div>`;
+    if (it.type === 'watch') h += `<h4>Video or film</h4>
+      ${f('Link', `<input class="st-in" data-md="url" value="${esc(d.url || '')}" placeholder="YouTube link, or a page for the film">`, 'YouTube links play on the page, and their title, channel and thumbnail can be filled in automatically.')}
+      <button class="st-btn sm" type="button" data-mact="details" style="margin:-.4rem 0 1rem">Fill in from the link</button>
+      <div class="st-row"><label class="st-field"><span>Type</span><select class="st-sel" data-md="kind">${Object.entries(WKIND).map(([k, l]) => `<option value="${k}" ${d.kind === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+      <label class="st-field"><span>Status</span><select class="st-sel" data-md="status">${Object.entries(WSTATUS).map(([k, l]) => `<option value="${k}" ${d.status === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label></div>
+      <div class="st-row"><label class="st-field"><span>${isPosterKind(d.kind) ? 'Director' : 'Channel or speaker'}</span><input class="st-in" data-md="creator" value="${esc(d.creator || '')}"></label><label class="st-field" style="max-width:6rem"><span>Year</span><input class="st-in" data-md="year" value="${esc(d.year || '')}"></label></div>
+      <div class="st-row"><label class="st-field"><span>Rating</span><select class="st-sel" data-md="rating"><option value="0">No rating</option>${[1, 2, 3, 4, 5].map((n) => `<option value="${n}" ${+d.rating === n ? 'selected' : ''}>${n} of 5</option>`).join('')}</select></label><label class="st-field"><span>Watched on</span><input class="st-in" type="date" data-md="watchedAt" value="${esc(d.watchedAt || '')}"></label></div>`;
+    const coverSec = `<h4>${it.type === 'book' ? 'Cover' : it.type === 'watch' ? (isPosterKind(d.kind) ? 'Poster' : 'Thumbnail') : 'Cover image'}</h4><div id="m-cover"></div>`;
+    if (it.type === 'book' || it.type === 'watch') h = coverSec + h; else h += coverSec;
     if (it.type === 'post') h += `<h4>References</h4><div id="m-refs"></div>`;
     if (it.type === 'note') h += `<h4>Growth</h4><div class="st-seg" role="group" aria-label="Growth stage">${Object.entries(GROWTH).map(([k, l]) => `<button type="button" data-mg="${k}" aria-pressed="${d.growth === k}">${l}</button>`).join('')}</div>
       <p style="font-size:.76rem;color:var(--st-muted);margin:.8rem 0">Link other notes with [[Title]] in the text.</p><button class="st-btn sm" type="button" data-mact="convert">Convert into a writing</button>`;
@@ -3408,6 +3916,7 @@ const Editor = {
       <div class="st-field"><span class="st-label">Related writing and research</span><div id="m-related"></div></div>`;
     if (it.type === 'book') h += `<h4>Book details</h4>
       ${f('Author', `<input class="st-in" data-md="author" value="${esc(d.author || '')}">`)}
+      ${f('ISBN', `<input class="st-in" data-md="isbn" value="${esc(d.isbn || '')}" placeholder="Optional, improves cover search">`)}
       <div class="st-row"><label class="st-field"><span>Year</span><input class="st-in" data-md="year" value="${esc(d.year || '')}"></label>
       <label class="st-field"><span>Shelf</span><select class="st-sel" data-md="shelf">${Object.entries(SHELVES).map(([k, l]) => `<option value="${k}" ${d.shelf === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label></div>
       ${f(`Progress: <b id="m-prog">${d.progress || 0}%</b>`, `<input type="range" min="0" max="100" step="5" data-md="progress" value="${d.progress || 0}">`)}
@@ -3432,32 +3941,58 @@ const Editor = {
     box.oninput = (e) => {
       const t = e.target;
       if (t.dataset.m) { const k = t.dataset.m;
-        if (k === 'featured' || k === 'isExample') it[k] = t.checked;
+        if (k === 'featured') { it.featured = t.checked; const l = Feature.list(), i = l.indexOf(it.id); if (t.checked && i < 0) l.push(it.id); if (!t.checked && i > -1) l.splice(i, 1); Data.saveSettings(); }
+        else if (k === 'isExample') it[k] = t.checked;
         else if (k === 'publishedAt') it.publishedAt = t.value ? new Date(t.value + 'T09:00:00').toISOString() : null;
         else if (k === 'scheduledAt') { it.scheduledAt = t.value ? new Date(t.value).toISOString() : null; this.renderShellTop(); }
         else if (k === 'slug') it.slug = slugify(t.value);
         else if (k !== 'category') it[k] = t.value;
         this.change(); }
-      if (t.dataset.md) { const k = t.dataset.md; d[k] = t.type === 'checkbox' ? t.checked : t.type === 'range' || k === 'rating' ? +t.value : t.value; if (k === 'progress') $('#m-prog').textContent = t.value + '%'; this.change(); }
+      if (t.dataset.md) { const k = t.dataset.md; d[k] = t.type === 'checkbox' ? t.checked : t.type === 'range' || k === 'rating' ? +t.value : t.value; if (k === 'progress') $('#m-prog').textContent = t.value + '%'; if (k === 'url') { (this.linkD = this.linkD || debounce(() => this.fillFromLink(false), 700))(); } this.change(); }
     };
-    box.onchange = async (e) => { const t = e.target; if (t.dataset.m === 'category') { if (t.value === '__new') { const v = await UI.prompt('New category', { placeholder: 'Category name', okLabel: 'Add' }); if (v && v.trim()) { const list = s.categories[it.type] = s.categories[it.type] || []; if (!list.includes(v.trim())) list.push(v.trim()); await Data.saveSettings(); it.category = v.trim(); } this.renderMeta(); } else it.category = t.value; this.change(); }
+    box.onchange = async (e) => { const t = e.target; if (t.dataset.md === 'kind') { this.renderMeta(); return; } if (t.dataset.m === 'category') { if (t.value === '__new') { const v = await UI.prompt('New category', { placeholder: 'Category name', okLabel: 'Add' }); if (v && v.trim()) { const list = s.categories[it.type] = s.categories[it.type] || []; if (!list.includes(v.trim())) list.push(v.trim()); await Data.saveSettings(); it.category = v.trim(); } this.renderMeta(); } else it.category = t.value; this.change(); }
       if (t.dataset.m === 'slug') { it.slug = Data.uniqueSlug(it, t.value || it.title); t.value = it.slug; this.change(); } };
     box.onclick = async (e) => { const b = e.target.closest('[data-mg],[data-mact]'); if (!b) return;
       if (b.dataset.mg) { d.growth = b.dataset.mg; $$('[data-mg]', box).forEach((x) => x.setAttribute('aria-pressed', String(x === b))); this.change(); }
       if (b.dataset.mact === 'slug') { it.slug = Data.uniqueSlug(it, it.title || 'untitled'); this.renderMeta(); this.change(); }
-      if (b.dataset.mact === 'convert') Studio.convertNote(it.id); };
+      if (b.dataset.mact === 'convert') Studio.convertNote(it.id);
+      if (b.dataset.mact === 'details') this.fillFromLink(true); };
   },
   coverPicker(box) {
     const it = this.it; const m = it.cover && App.media.get(it.cover);
-    box.innerHTML = `${m ? `<div class="media-preview" style="background-image:url('${Media.url(it.cover)}')"></div>` : `<p style="font-size:.78rem;color:var(--st-muted);margin:0 0 .6rem">${it.type === 'book' ? 'Without an image, a typographic cover is generated.' : 'Without an image, a generated line drawing is used where the theme shows covers.'}</p>`}
-      <div class="st-row"><button class="st-btn sm" type="button" data-c="up">${ICO.upload} Upload</button><button class="st-btn sm" type="button" data-c="lib">Library</button>${m ? `<button class="st-btn sm ghost danger" type="button" data-c="rm">Remove</button>` : ''}</div>
+    const ext = !m && externalCover(it); const finder = it.type === 'book' || it.type === 'watch';
+    box.innerHTML = `${m ? `<div class="media-preview" style="background-image:url('${Media.url(it.cover)}')"></div>` : ext ? `<div class="media-preview" style="background-image:url('${esc(ext)}')"></div>` : `<p style="font-size:.78rem;color:var(--st-muted);margin:0 0 .6rem">${it.type === 'book' ? 'Without an image, a typographic cover is generated.' : 'Without an image, a generated line drawing is used where the theme shows covers.'}</p>`}
+      <div class="st-row">${finder ? `<button class="st-btn sm acc" type="button" data-c="find">${ICO.search} Find online</button>` : ''}<button class="st-btn sm" type="button" data-c="up">${ICO.upload} Upload</button><button class="st-btn sm" type="button" data-c="lib">Library</button>${m || (it.data && it.data.coverUrl) ? `<button class="st-btn sm ghost danger" type="button" data-c="rm">Remove</button>` : ''}</div>
+      ${finder ? `<label class="st-field" style="margin-top:.7rem"><span>Or paste an image link</span><input class="st-in" data-cu value="${esc((it.data && it.data.coverUrl) || '')}" placeholder="https://…"></label>` : ''}
       ${m && it.type !== 'book' ? `<label class="st-field" style="margin-top:.7rem"><span>Cover caption</span><input class="st-in" data-cc value="${esc(it.coverCaption || '')}"></label>` : ''}`;
     box.onclick = async (e) => { const b = e.target.closest('[data-c]'); if (!b) return;
       if (b.dataset.c === 'up') { const f = await pickFile('image/*'); if (!f) return; try { it.cover = (await Media.add(f)).id; } catch (err) { return UI.toast(err.message, 'err'); } }
       if (b.dataset.c === 'lib') { const id = await Studio.pickMedia('image'); if (!id) return; it.cover = id; }
-      if (b.dataset.c === 'rm') it.cover = null;
+      if (b.dataset.c === 'rm') { it.cover = null; if (it.data) it.data.coverUrl = ''; }
+      if (b.dataset.c === 'find') { const choice = await this.findCover(); if (!choice) return; const how = await CoverFinder.adopt(it, choice); UI.toast(how === 'stored' ? 'Cover saved to the media library' : 'Cover linked from its source (that site does not allow copying)'); }
       this.coverPicker(box); this.change(true); };
     box.oninput = (e) => { if (e.target.dataset.cc !== undefined) { it.coverCaption = e.target.value; this.change(); } };
+    box.onchange = (e) => { if (e.target.dataset.cu !== undefined) { const u = Sanitize.safeUrl(e.target.value.trim()); it.data.coverUrl = /^https?:/i.test(u) ? u : ''; if (it.data.coverUrl) it.cover = null; this.coverPicker(box); this.change(true); } };
+  },
+  async findCover() {
+    const it = this.it; if (!it.title && !(it.data.isbn || it.data.url)) { UI.toast('Add a title first' + (it.type === 'book' ? ' (or an ISBN).' : ' (or a link).'), 'err'); return null; }
+    UI.toast('Searching…'); let res;
+    try { res = await CoverFinder.search(it); } catch (e) { UI.toast('Search failed: ' + e.message + ' You can paste an image link instead.', 'err'); return null; }
+    if (!res.items.length) { UI.toast(`No covers found on ${res.source || 'the web'}. Try adding ${it.type === 'book' ? 'the author or ISBN' : 'the year'}, or paste an image link.`, 'err'); return null; }
+    const body = document.createElement('div');
+    body.innerHTML = `<p style="margin:0 0 .8rem">Results from ${esc(res.source)}. Choose one; it is copied into your media library when the source allows it, otherwise linked.</p><div class="finder ${res.wide ? 'wide' : ''}">${res.items.map((c, i) => `<button type="button" data-i="${i}"><img src="${esc(c.thumb)}" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.closest('button').remove()"><span>${esc(c.label)}</span></button>`).join('')}</div>`;
+    return UI.modal({ title: 'Choose a cover', body, wide: true, className: 'studio', actions: [{ label: 'Cancel', value: null }], onOpen: (back, close) => { $$('[data-i]', back).forEach((b) => b.addEventListener('click', () => close(res.items[+b.dataset.i]))); } });
+  },
+  async fillFromLink(manual) {
+    const it = this.it; if (!it || it.type !== 'watch') return; const url = it.data.url; const yt = youtubeId(url);
+    if (!url) { if (manual) UI.toast('Paste a link first.', 'err'); return; }
+    if (!manual && it.title && it.data.creator) return;
+    const info = await CoverFinder.details(url);
+    if (!info) { if (manual) UI.toast(yt ? 'YouTube did not return details for this link. Fill them in by hand.' : 'Details can only be fetched for YouTube links.', 'err'); return; }
+    if (!it.title || manual) { it.title = info.title; const t = $('#ed-title'); if (t) { t.value = it.title; this.autogrow(t); } }
+    if (!it.data.creator || manual) it.data.creator = info.creator;
+    if (yt && !['video', 'lecture'].includes(it.data.kind)) it.data.kind = 'video';
+    this.renderMeta(); this.change(true); if (manual) UI.toast('Details filled in from the link');
   },
   fileList(box, arr, accept, label) {
     const draw = () => { box.innerHTML = `<div class="mini-list">${arr.map((id, i) => { const m = App.media.get(id); return m ? `<div class="it" style="grid-template-columns:auto 1fr auto;align-items:center">${m.type.startsWith('image/') ? `<img src="${Media.url(id)}" alt="" style="width:2.6rem;height:2.6rem;object-fit:cover;border-radius:5px">` : `<span style="display:grid;place-items:center;width:2.6rem;height:2.6rem;border-radius:5px;background:var(--st-panel);font-size:.65rem">PDF</span>`}<span style="font-size:.78rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(m.name)}<br><small style="color:var(--st-muted)">${fmtBytes(m.size)}</small></span><button class="st-icon" type="button" data-rm="${i}" aria-label="Remove">${ICO.close}</button></div>` : ''; }).join('')}</div>
@@ -3507,7 +4042,6 @@ function miniList(host, arr, fields, onChange, addLabel = 'Add') {
    to this browser profile can open the Studio. A hosted backend would
    implement Auth.canEdit() with real sessions.
    ===================================================================== */
-const Auth = { canEdit: () => App.mode === 'local', provider: 'none (local editing mode)' };
 
 const Studio = {
   pendingNew: null,
@@ -3521,24 +4055,26 @@ const Studio = {
         <nav class="st-nav">
           ${L('#/studio', 'home', 'Dashboard')}
           <div class="grp">Content</div>
-          ${L('#/studio/content', 'grid', 'All content', 'all')}${L('#/studio/content?type=post', 'pen', 'Writings', 'post')}${L('#/studio/content?type=note', 'leaf', 'Notes', 'note')}${L('#/studio/content?type=research', 'flask', 'Research', 'research')}${L('#/studio/content?type=project', 'box', 'Projects', 'project')}${L('#/studio/content?type=book', 'book', 'Library', 'book')}${L('#/studio/media', 'image', 'Media', 'media')}
+          ${L('#/studio/content', 'grid', 'All content', 'all')}${L('#/studio/content?type=post', 'pen', 'Writings', 'post')}${L('#/studio/content?type=note', 'leaf', 'Notes', 'note')}${L('#/studio/content?type=research', 'flask', 'Research', 'research')}${L('#/studio/content?type=project', 'box', 'Projects', 'project')}${L('#/studio/content?type=book', 'book', 'Library', 'book')}${L('#/studio/content?type=watch', 'film', 'Watch', 'watch')}${L('#/studio/media', 'image', 'Media', 'media')}
           <div class="grp">Site</div>
-          ${L('#/studio/home', 'list', 'Home and navigation')}${L('#/studio/edit/page_about', 'user', 'About page')}${L('#/studio/resume', 'cv', 'Résumé')}${L('#/studio/themes', 'palette', 'Theme Studio')}${L('#/studio/settings', 'gear', 'Settings')}
+          ${L('#/studio/home', 'list', 'Home and navigation')}${L('#/studio/edit/page_about', 'user', 'About page')}${L('#/studio/resume', 'cv', 'Résumé')}${L('#/studio/themes', 'palette', 'Theme Studio')}${L('#/studio/settings', 'gear', 'Settings')}${L('#/studio/account', App.mode === 'remote' ? 'key' : 'cloud', App.mode === 'remote' ? 'Account and password' : 'Go live: login and publishing')}
           <div class="grp">Data</div>
           ${L('#/studio/data', 'db', 'Backup and publish')}
         </nav>
-        <div class="st-local" role="note"><b>${ICO.lock.replace('<svg ', '<svg width="13" height="13" ')} Local editing mode</b>Changes are saved in this browser only. This is not a login: anyone using this browser profile can edit. Publish a snapshot to update your public site.
-          <div class="st-row" style="margin-top:.6rem"><a class="st-btn sm" href="#/">${ICO.eye} View site</a><button class="st-btn sm ghost" type="button" data-st="mode" aria-label="Switch light or dark">${Theme.mode() === 'dark' ? ICO.sun : ICO.moon}</button></div></div>
+        ${App.mode === 'remote' ? `<div class="st-local" role="note" style="border-color:color-mix(in oklab, var(--st-ok) 40%, var(--st-rule2))"><b style="color:var(--st-ok)">${ICO.cloud.replace('<svg ', '<svg width="13" height="13" ')} Live site</b>Signed in as ${esc(Auth.email() || 'site admin')}. Saving and publishing update the website immediately.
+          <div class="st-row" style="margin-top:.6rem"><a class="st-btn sm" href="#/">${ICO.eye} View site</a><button class="st-btn sm ghost" type="button" data-st="signout">Sign out</button></div></div>`
+        : `<div class="st-local" role="note"><b>${ICO.lock.replace('<svg ', '<svg width="13" height="13" ')} Local editing mode</b>Changes are saved in this browser only, and anyone using this browser can edit. <a href="#/studio/account">Set up a login and live publishing</a>.
+          <div class="st-row" style="margin-top:.6rem"><a class="st-btn sm" href="#/">${ICO.eye} View site</a><button class="st-btn sm ghost" type="button" data-st="mode" aria-label="Switch light or dark">${Theme.mode() === 'dark' ? ICO.sun : ICO.moon}</button></div></div>`}
       </aside>
       <div class="st-main" id="st-main"></div></div>`;
     document.body.classList.add('in-studio');
     $('#studio').addEventListener('click', async (e) => {
-      const b = e.target.closest('[data-st]'); if (b) { if (b.dataset.st === 'nav') $('#studio').classList.toggle('nav-open'); if (b.dataset.st === 'mode') { await Theme.toggleMode(); b.innerHTML = Theme.mode() === 'dark' ? ICO.sun : ICO.moon; } }
+      const b = e.target.closest('[data-st]'); if (b) { if (b.dataset.st === 'nav') $('#studio').classList.toggle('nav-open'); if (b.dataset.st === 'mode') { await Theme.toggleMode(); b.innerHTML = Theme.mode() === 'dark' ? ICO.sun : ICO.moon; } if (b.dataset.st === 'signout') this.signOut(); }
       if (e.target.closest('.st-nav a')) $('#studio').classList.remove('nav-open');
       if (!e.target.closest('.st-pop,[data-bm],[data-ed="more"],[data-new]')) Editor.closePop();
     });
     this.updateCounts();
-    if (!Prefs.get('studioNoticeSeen')) { Prefs.set('studioNoticeSeen', true); UI.modal({ title: 'Welcome to your Studio', body: `<p>This is a <b>local editing mode</b>, not a secure login. Everything you write is stored in this browser's IndexedDB on this device.</p><p>Visitors to your hosted site do not see these edits until you use <b>Backup and publish → Publish static snapshot</b> and upload the file it produces.</p><p>Browser storage can be cleared by the browser or by you, so export a JSON backup regularly.</p>`, actions: [{ label: 'Understood', primary: true, value: true }] }); }
+    if (App.mode === 'local' && !Prefs.get('studioNoticeSeen')) { Prefs.set('studioNoticeSeen', true); UI.modal({ title: 'Welcome to your Studio', body: `<p>This is a <b>local editing mode</b>, not a secure login. Everything you write is stored in this browser's IndexedDB on this device.</p><p>Visitors to your hosted site do not see these edits until you use <b>Backup and publish → Publish static snapshot</b> and upload the file it produces.</p><p>Browser storage can be cleared by the browser or by you, so export a JSON backup regularly.</p>`, actions: [{ label: 'Understood', primary: true, value: true }] }); }
   },
   updateCounts() {
     const c = { all: App.items.filter((i) => i.type !== 'page').length, media: App.media.size }; for (const t of Object.keys(TYPES)) c[t] = App.items.filter((i) => i.type === t).length;
@@ -3547,7 +4083,8 @@ const Studio = {
   mark(h) { $$('.st-nav a').forEach((a) => { const on = a.dataset.snav === h; if (on) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); }); },
   top(title, actions = '') { return `<div class="st-top"><button class="st-icon st-mobile-top" type="button" data-st="nav" aria-label="Open studio navigation">${ICO.menu}</button><h1>${esc(title)}</h1><span class="sp"></span>${actions}</div>`; },
   async render(r) {
-    if (App.mode !== 'local') return this.snapshotNotice();
+    if (App.mode === 'snapshot') return this.snapshotNotice();
+    if (App.mode === 'remote' && !Auth.canEdit()) return this.loginPage(r);
     if (Editor.it) Editor.close(); Editor.unbind();
     if (!App.inStudio || !$('#studio')) { App.inStudio = true; this.buildShell(); }
     App.previewTheme = null; Theme.apply();
@@ -3567,6 +4104,7 @@ const Studio = {
       case 'themes': return this.themesPage(main);
       case 'settings': return this.settingsPage(main, r.query.tab);
       case 'data': return this.dataPage(main);
+      case 'account': return App.mode === 'remote' ? this.accountPage(main, r.query) : this.goLivePage(main);
       default: main.innerHTML = this.top('Not found') + `<div class="st-page"><div class="st-empty"><b>This Studio page does not exist.</b><a class="st-btn" href="#/studio">Back to the dashboard</a></div></div>`;
     }
   },
@@ -3590,14 +4128,16 @@ const Studio = {
     const t = Theme.def();
     main.innerHTML = this.top('Dashboard', `<div style="position:relative"><button class="st-btn pri" type="button" data-new>${ICO.plus} New</button></div>`) + `<div class="st-page">
       <h2 class="st-h2">Studio</h2><p class="st-sub">Write, edit and arrange the site. Everything here is saved in this browser.</p>
+      ${App.mode === 'remote' && App.remoteEmpty ? `<div class="st-note"><b>Your Supabase project has no content yet.</b> Open this Studio in the copy of the site where you wrote your content (your original file) and use Go live, step 5, to upload it.</div>` : ''}
+      ${App.mode === 'local' ? `<div class="st-note info"><b>Want a real login and edits that update the website?</b> Follow the short setup in <a href="#/studio/account">Go live</a>.</div>` : ''}
       ${App.storage === 'memory' ? `<div class="st-note"><b>Storage is not persistent.</b> ${esc(LocalBackend.memReason || '')} Changes will be lost when this tab closes. Export a backup before leaving.</div>` : ''}
       ${ex.length ? `<div class="st-note info"><b>${ex.length} example ${ex.length === 1 ? 'entry is' : 'entries are'} still on the site.</b> They are marked “Example” publicly so nobody mistakes them for your work. <button class="st-btn sm" type="button" id="rm-ex" style="margin-left:.4rem">Remove all examples</button></div>` : ''}
       <div class="st-grid c4" style="margin-bottom:1rem">
-        ${[['Published writings', cnt('post', 'published'), '#/studio/content?type=post'], ['Drafts', cnt(null, 'draft'), '#/studio/content?status=draft'], ['Notes', cnt('note'), '#/studio/content?type=note'], ['Research entries', cnt('research'), '#/studio/content?type=research'], ['Projects', cnt('project'), '#/studio/content?type=project'], ['Books', cnt('book'), '#/studio/content?type=book']]
+        ${[['Published writings', cnt('post', 'published'), '#/studio/content?type=post'], ['Drafts', cnt(null, 'draft'), '#/studio/content?status=draft'], ['Notes', cnt('note'), '#/studio/content?type=note'], ['Research entries', cnt('research'), '#/studio/content?type=research'], ['Projects', cnt('project'), '#/studio/content?type=project'], ['Books', cnt('book'), '#/studio/content?type=book'], ['Videos and films', cnt('watch'), '#/studio/content?type=watch']]
           .map(([l, n, h]) => `<a class="st-card st-stat" href="${h}"><b>${n}</b><span>${l}</span></a>`).join('')}
       </div>
       <div class="st-grid c2">
-        <div class="st-card"><h3>Quick create</h3><div class="st-row">${['post', 'note', 'research', 'project', 'book'].map((x) => `<button class="st-btn" type="button" data-create="${x}">${ICO[TYPES[x].icon]} ${x === 'post' ? 'Writing' : TYPES[x].label}</button>`).join('')}</div>
+        <div class="st-card"><h3>Quick create</h3><div class="st-row">${['post', 'note', 'research', 'project', 'book', 'watch'].map((x) => `<button class="st-btn" type="button" data-create="${x}">${ICO[TYPES[x].icon]} ${x === 'post' ? 'Writing' : TYPES[x].label}</button>`).join('')}</div>
           <h3 style="margin-top:1.4rem">Recently edited</h3><ul class="st-list">${recent.map((i) => `<li><span style="color:var(--st-muted)">${ICO[TYPES[i.type].icon].replace('<svg ', '<svg width="15" height="15" ')}</span><a href="#/studio/edit/${i.id}" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(i.title || 'Untitled')}</a>${this.pill(i)}<span class="dt" style="color:var(--st-muted);font-size:.76rem;white-space:nowrap">${relTime(i.updated)}</span></li>`).join('')}</ul></div>
         <div class="st-grid">
           <div class="st-card"><h3>Storage</h3><div id="dash-storage" style="font-size:.82rem;color:var(--st-ink2)">Measuring…</div></div>
@@ -3620,7 +4160,7 @@ const Studio = {
       <p style="margin:.5rem 0 0">${persisted ? 'Persistent storage is on.' : `Persistent storage is off. <button class="st-btn sm" type="button" id="persist">Ask the browser to keep data</button>`}</p>`;
   },
   pill(i) { if (isScheduled(i)) return '<span class="st-pill scheduled">Scheduled</span>'; return `<span class="st-pill ${i.status}">${i.status === 'published' ? 'Published' : i.status === 'archived' ? 'Archived' : 'Draft'}</span>${i.isExample ? '<span class="st-pill ex nodot">Example</span>' : ''}`; },
-  newMenu(anchor) { Editor.host = $('#st-main'); Editor.pop(anchor, ['post', 'note', 'research', 'project', 'book'].map((t) => ({ label: 'New ' + (t === 'post' ? 'writing' : TYPES[t].label.toLowerCase()), ico: '', run: () => this.create(t) }))); },
+  newMenu(anchor) { Editor.host = $('#st-main'); Editor.pop(anchor, ['post', 'note', 'research', 'project', 'book', 'watch'].map((t) => ({ label: 'New ' + (t === 'post' ? 'writing' : TYPES[t].label.toLowerCase()), ico: '', run: () => this.create(t) }))); },
 
   /* ---------- Create / edit ---------- */
   create(type) {
@@ -3666,7 +4206,7 @@ const Studio = {
         <td><a class="ttl" href="#/studio/edit/${i.id}">${esc(i.title || 'Untitled')}</a>${i.subtitle ? `<span style="font-size:.76rem;color:var(--st-muted);display:block;max-width:28rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(i.subtitle)}</span>` : ''}</td>
         <td class="hide-sm" style="color:var(--st-ink2);font-size:.8rem">${esc(TYPES[i.type].label)}${i.category ? `<br><small style="color:var(--st-muted)">${esc(i.category)}</small>` : ''}</td>
         <td>${this.pill(i)}</td>
-        <td class="hide-sm"><button class="st-icon" type="button" data-feat="${i.id}" aria-pressed="${!!i.featured}" aria-label="${i.featured ? 'Remove from' : 'Feature on'} the home page" title="Featured on home">${i.featured ? ICO.starFill : ICO.star}</button></td>
+        <td class="hide-sm"><button class="st-icon" type="button" data-feat="${i.id}" aria-pressed="${!!(i.featured || Feature.has(i.id))}" aria-label="${i.featured || Feature.has(i.id) ? 'Remove from' : 'Feature on'} the home page" title="Featured on home">${i.featured || Feature.has(i.id) ? ICO.starFill : ICO.star}</button></td>
         <td class="dt hide-sm">${relTime(i.updated)}</td>
         <td><div class="acts">${isPublic(i) ? `<a class="st-icon" href="${itemUrl(i)}" aria-label="View on site" title="View">${ICO.eye}</a>` : ''}<a class="st-icon" href="#/studio/edit/${i.id}" aria-label="Edit" title="Edit">${ICO.edit}</a><button class="st-icon" type="button" data-row="${i.id}" aria-label="More actions" title="More">${ICO.dots}</button></div></td></tr>`).join('')
         : `<tr><td colspan="6"><div class="st-empty"><b>${App.items.length ? 'Nothing matches these filters' : 'No content yet'}</b>Create something with the New button.</div></td></tr>`;
@@ -3701,7 +4241,7 @@ const Studio = {
       const t = e.target.closest('button,a'); if (!t) return;
       if (t.dataset.tab) { st.tab = t.dataset.tab; return draw(); }
       if (t.dataset.new !== undefined) return this.newMenu(t);
-      if (t.dataset.feat) { const i = Data.byId(t.dataset.feat); i.featured = !i.featured; await Data.saveItem(i, { touch: false }); drawEntries(); return; }
+      if (t.dataset.feat) { const i = Data.byId(t.dataset.feat); try { await Feature.set(i, !(i.featured || Feature.has(i.id))); } catch (err) { UI.toast(err.message, 'err'); } drawEntries(); return; }
       if (t.dataset.row) { const i = Data.byId(t.dataset.row); Editor.host = main; return Editor.pop(t, [
         { label: 'Edit', run: () => Router.go('#/studio/edit/' + i.id) },
         { label: 'Duplicate', run: () => this.duplicate(i.id) },
@@ -3768,21 +4308,25 @@ const Studio = {
   homePage(main) {
     const s = App.settings; const save = debounce(async () => { await Data.saveSettings(); flash(); }, 350);
     const flash = () => { const el = $('#hp-saved'); if (el) { el.textContent = 'Saved'; setTimeout(() => (el.textContent = ''), 1500); } };
-    const LABEL = { now: 'Now', research: 'Research', writings: 'Latest writing', projects: 'Projects', notes: 'Recent notes', library: 'On the shelf', quotes: 'Kept lines' };
+    const LABEL = { now: 'Now', featured: 'Selected (hand-picked)', research: 'Research', writings: 'Latest writing', projects: 'Projects', notes: 'Recent notes', library: 'On the shelf', watch: 'Watching', quotes: 'Kept lines' };
+    const MODES = [['featured', 'Featured first'], ['only', 'Only featured'], ['latest', 'Newest only']];
     const draw = () => {
       const posts = App.items.filter((i) => i.type === 'post' && isPublic(i));
       main.innerHTML = this.top('Home and navigation', `<span id="hp-saved" style="font-size:.78rem;color:var(--st-ok)"></span><a class="st-btn" href="#/">${ICO.eye} View home page</a>`) + `<div class="st-page"><div class="st-grid c2">
-        <div class="st-card"><h3>Home page sections</h3><p style="font-size:.8rem;color:var(--st-ink2);margin:0 0 .8rem">Order and visibility of sections below the introduction. Featured entries appear first in each.</p>
-          ${s.home.sections.map((x, i) => `<div class="sortable-row"><input type="checkbox" class="st-toggle" data-hv="${i}" ${x.visible ? 'checked' : ''} aria-label="Show ${LABEL[x.key]}"><span class="nm">${LABEL[x.key] || x.key}</span><button class="st-icon" type="button" data-hu="${i}" aria-label="Move up">${ICO.up}</button><button class="st-icon" type="button" data-hd="${i}" aria-label="Move down">${ICO.down}</button></div>`).join('')}
+        <div class="st-card"><h3>Home page sections</h3><p style="font-size:.8rem;color:var(--st-ink2);margin:0 0 .8rem">Order and visibility of sections below the introduction, and what each one shows.</p>
+          ${s.home.sections.map((x, i) => `<div class="sortable-row"><input type="checkbox" class="st-toggle" data-hv="${i}" ${x.visible ? 'checked' : ''} aria-label="Show ${LABEL[x.key]}"><span class="nm">${LABEL[x.key] || x.key}</span>${x.mode ? `<select class="st-sel" data-hm="${i}" aria-label="What ${LABEL[x.key]} shows" style="width:auto;padding:.25rem .4rem;font-size:.74rem">${MODES.map(([k, l]) => `<option value="${k}" ${x.mode === k ? 'selected' : ''}>${l}</option>`).join('')}</select>` : ''}<button class="st-icon" type="button" data-hu="${i}" aria-label="Move up">${ICO.up}</button><button class="st-icon" type="button" data-hd="${i}" aria-label="Move down">${ICO.down}</button></div>`).join('')}
           <div class="st-row" style="margin-top:1rem"><label class="st-field"><span>Entries per section</span><input class="st-in" type="number" min="1" max="9" id="hp-n" value="${s.home.perSection || 3}"></label>
-          <label class="st-field"><span>Lead writing</span><select class="st-sel" id="hp-lead"><option value="">Newest featured writing</option>${posts.map((p) => `<option value="${p.id}" ${s.home.lead === p.id ? 'selected' : ''}>${esc(p.title)}</option>`).join('')}</select></label></div></div>
+          <label class="st-field"><span>Lead writing</span><select class="st-sel" id="hp-lead"><option value="">Newest featured writing</option>${posts.map((p) => `<option value="${p.id}" ${s.home.lead === p.id ? 'selected' : ''}>${esc(p.title)}</option>`).join('')}</select></label></div>
+          <label class="st-check" style="margin-top:.4rem"><input type="checkbox" class="st-toggle" id="hp-type" ${s.home.typewriter !== false ? 'checked' : ''}> Type out my name on the home page, on a gentle loop</label>
+          <label class="st-check"><input type="checkbox" class="st-toggle" id="hp-anim" ${s.home.animation !== false ? 'checked' : ''}> Show the small orbit animation under the introduction</label></div>
         <div class="st-card"><h3>Navigation and section visibility</h3><p style="font-size:.8rem;color:var(--st-ink2);margin:0 0 .8rem">Hidden sections disappear from menus, the footer and the home page, and their pages return “not found”.</p>
           ${s.nav.map((n, i) => `<div class="sortable-row"><input type="checkbox" class="st-toggle" data-nv="${i}" ${n.visible ? 'checked' : ''} aria-label="Show ${esc(n.label)}"><input class="st-in" data-nl="${i}" value="${esc(n.label)}" aria-label="Label for ${esc(n.key)}" style="flex:1;padding:.35rem .5rem"><button class="st-icon" type="button" data-nu="${i}" aria-label="Move up">${ICO.up}</button><button class="st-icon" type="button" data-nd="${i}" aria-label="Move down">${ICO.down}</button></div>`).join('')}</div>
         <div class="st-card"><h3>Now</h3><p style="font-size:.8rem;color:var(--st-ink2);margin:0 0 .8rem">What you are studying, reading, building or thinking about. Empty rows are hidden.</p>
           <label class="st-field"><span>Last updated</span><input class="st-in" type="date" id="hp-now-d" value="${esc(s.now.updated || '')}"></label><div id="hp-now"></div></div>
         <div class="st-card"><h3>Quotations</h3><p style="font-size:.8rem;color:var(--st-ink2);margin:0 0 .8rem">The first one is used as the epigraph in the Monograph and Commonplace themes. Only quote what you have the right to reproduce.</p><div id="hp-q"></div></div>
-        <div class="st-card"><h3>Featured entries</h3><p style="font-size:.8rem;color:var(--st-ink2);margin:0 0 .8rem">Quick toggles. You can also feature an entry from its details panel.</p>
-          ${App.items.filter((i) => i.type !== 'page' && isPublic(i)).map((i) => `<label class="st-check"><input type="checkbox" class="st-toggle" data-hf="${i.id}" ${i.featured ? 'checked' : ''}> <span>${esc(i.title)} <small style="color:var(--st-muted)">${TYPES[i.type].label}</small></span></label>`).join('') || '<p style="font-size:.8rem;color:var(--st-muted)">Publish something first.</p>'}</div>
+        <div class="st-card" style="grid-column:1/-1"><h3>Featured on the home page</h3><p style="font-size:.8rem;color:var(--st-ink2);margin:0 0 .8rem">These appear, in this order, in the Selected section, and first in their own sections (unless a section is set to newest only). Any kind of entry can be featured. Drafts are kept in the list but only show once published.</p>
+          ${Feature.list().map((id, i) => { const x = Data.byId(id); if (!x) return ''; return `<div class="sortable-row"><span style="color:var(--st-muted)">${ICO[TYPES[x.type].icon].replace('<svg ', '<svg width="15" height="15" ')}</span><span class="nm">${esc(x.title || 'Untitled')} <small style="color:var(--st-muted)">${TYPES[x.type].label}${isPublic(x) ? '' : ', not published'}</small></span><button class="st-icon" type="button" data-fu="${i}" aria-label="Move up">${ICO.up}</button><button class="st-icon" type="button" data-fd="${i}" aria-label="Move down">${ICO.down}</button><button class="st-icon" type="button" data-fx="${id}" aria-label="Remove from featured">${ICO.close}</button></div>`; }).join('') || '<p style="font-size:.8rem;color:var(--st-muted)">Nothing featured yet.</p>'}
+          <select class="st-sel" id="hp-fadd" style="margin-top:.6rem;max-width:28rem"><option value="">Feature another entry…</option>${Object.keys(TYPES).filter((t) => t !== 'page').map((t) => { const opts = App.items.filter((x) => x.type === t && x.status !== 'archived' && !Feature.has(x.id)); return opts.length ? `<optgroup label="${TYPES[t].plural}">${opts.map((x) => `<option value="${x.id}">${esc(x.title || 'Untitled')}${isPublic(x) ? '' : ' (draft)'}</option>`).join('')}</optgroup>` : ''; }).join('')}</select></div>
       </div></div>`;
       miniList($('#hp-now', main), s.now.entries, [{ k: 'label', ph: 'Label, e.g. Reading' }, { k: 'text', ph: 'What', ta: true }], save, 'Add row');
       miniList($('#hp-q', main), s.quotes, [{ k: 'text', ph: 'Quotation', ta: true }, { k: 'source', ph: 'Source' }], save, 'Add quotation');
@@ -3791,12 +4335,17 @@ const Studio = {
     main.onchange = async (e) => { const t = e.target; const d = t.dataset;
       if (d.hv) { s.home.sections[+d.hv].visible = t.checked; save(); }
       if (d.nv) { s.nav[+d.nv].visible = t.checked; save(); }
-      if (d.hf) { const i = Data.byId(d.hf); i.featured = t.checked; await Data.saveItem(i, { touch: false }); flash(); }
+      if (d.hm) { s.home.sections[+d.hm].mode = t.value; save(); }
+      if (t.id === 'hp-anim') { s.home.animation = t.checked; save(); }
+      if (t.id === 'hp-type') { s.home.typewriter = t.checked; save(); }
+      if (t.id === 'hp-fadd' && t.value) { const x = Data.byId(t.value); await Feature.set(x, true); flash(); draw(); }
       if (t.id === 'hp-n') { s.home.perSection = clamp(+t.value || 3, 1, 9); save(); }
       if (t.id === 'hp-lead') { s.home.lead = t.value || null; save(); }
       if (t.id === 'hp-now-d') { s.now.updated = t.value; save(); } };
     main.oninput = (e) => { const d = e.target.dataset; if (d.nl) { s.nav[+d.nl].label = e.target.value; save(); } };
     main.onclick = (e) => { const b = e.target.closest('button'); if (!b) return; const d = b.dataset; const sw = (arr, i, j) => { if (j < 0 || j >= arr.length) return; [arr[i], arr[j]] = [arr[j], arr[i]]; save(); draw(); };
+      if (d.fu) sw(Feature.list(), +d.fu, +d.fu - 1); if (d.fd) sw(Feature.list(), +d.fd, +d.fd + 1);
+      if (d.fx) { const x = Data.byId(d.fx); if (x) Feature.set(x, false).then(() => { flash(); draw(); }); else { Feature.list().splice(Feature.list().indexOf(d.fx), 1); save(); draw(); } }
       if (d.hu) sw(s.home.sections, +d.hu, +d.hu - 1); if (d.hd) sw(s.home.sections, +d.hd, +d.hd + 1); if (d.nu) sw(s.nav, +d.nu, +d.nu - 1); if (d.nd) sw(s.nav, +d.nd, +d.nd + 1); };
   },
 
@@ -3923,7 +4472,7 @@ const Studio = {
         ${f('Public site address', 'seo.baseUrl', { ph: 'https://yourname.github.io', help: 'Needed for RSS, the sitemap, canonical links and shared links. Use the address where the snapshot is hosted.' })}</div>`,
       backend: `<div class="st-card" style="font-size:.86rem;line-height:1.6;color:var(--st-ink2)"><h3>How storage works</h3>
         <p>This single file stores content with <b>${esc(LocalBackend.name)}</b>${App.storage === 'memory' ? ', which is unavailable here, so a temporary in-memory store is in use' : ''}. It is private to this browser profile on this device. Clearing site data, private browsing, or some browsers’ storage policies will erase it.</p>
-        <p>The Studio has no password, because a password checked inside a static page protects nothing: the content and the check are both downloaded to the visitor. Editing is therefore a local mode, and the published site is a read-only snapshot.</p>
+        <p>${App.mode === 'remote' ? 'This site is connected to Supabase. The Studio requires your email and password, and the database itself refuses changes from anyone who is not a site admin.' : 'Without a hosted backend there is no real login: a password checked inside a static page protects nothing. Use <a href="#/studio/account">Go live</a> to connect Supabase for a proper login and live publishing.'}</p>
         <h3 style="margin-top:1.2rem">Connecting a hosted backend later</h3>
         <p>Storage goes through one adapter (<code>LocalBackend</code>) with five methods: <code>open</code>, <code>get</code>, <code>getAll</code>, <code>put</code>, <code>del</code>, plus an <code>Auth.canEdit()</code> check. A hosted service such as Supabase can implement the same interface with a database table per store, a storage bucket for media, and real sign-in for the Studio. Publishing would then write to the database rather than producing a snapshot file. None of this is active in this file.</p>
         <p style="margin:0">Current: provider <b>${esc(s.backend.provider)}</b>, authentication <b>${esc(Auth.provider)}</b>, schema version <b>${App.meta.schemaVersion}</b>, app version <b>${APP_VERSION}</b>.</p></div>`
@@ -3946,7 +4495,7 @@ const Studio = {
     const s = App.settings; const hasBase = !!s.seo.baseUrl;
     const pubCount = App.items.filter(isPublic).length; const lb = App.meta.lastBackup;
     main.innerHTML = this.top('Backup and publish') + `<div class="st-page narrow">
-      <div class="st-note"><b>Browser storage is not a publishing backend.</b> Your work lives in this browser until you export it. It can be lost if site data is cleared, and edits here never change what visitors see until you upload a new snapshot.</div>
+      ${App.mode === 'remote' ? `<div class="st-note ok"><b>Your site is live.</b> Saving and publishing in the Studio update the website straight away. The exports below are for backups, or for hosting a copy without Supabase.</div>` : `<div class="st-note"><b>Browser storage is not a publishing backend.</b> Your work lives in this browser until you export it, and edits here never change what visitors see until you upload a new snapshot. <a href="#/studio/account">Go live</a> to publish directly.</div>`}
       <div class="st-card" style="margin-bottom:1rem"><h3>Publish static snapshot</h3><p style="font-size:.84rem;color:var(--st-ink2);margin:0 0 .8rem">Builds a new standalone <code>index.html</code> containing your ${pubCount} published entries, the settings, the active theme and every image and PDF they use. Drafts, archived entries, scheduled entries that are not yet due, and unused media are left out. Upload the file to any static host (GitHub Pages, Netlify, a university web space); no build step is needed.</p>
         <label class="st-check"><input type="checkbox" class="st-toggle" id="dp-ex" checked> Include entries marked as examples</label>
         <div class="st-row"><button class="st-btn acc" type="button" id="dp-snap">${ICO.download} Publish static snapshot</button><span id="dp-snap-info" style="font-size:.78rem;color:var(--st-muted)"></span></div></div>
@@ -3955,7 +4504,7 @@ const Studio = {
       <div class="st-card" style="margin-bottom:1rem"><h3>Other exports</h3>
         <div class="st-row"><button class="st-btn" type="button" id="dp-mdzip">${ICO.file} All writings and notes as Markdown (.zip)</button><button class="st-btn" type="button" id="dp-rss" ${hasBase ? '' : 'disabled'}>${ICO.rss} RSS feed</button><button class="st-btn" type="button" id="dp-map" ${hasBase ? '' : 'disabled'}>${ICO.map} Sitemap</button></div>
         ${hasBase ? `<p style="font-size:.78rem;color:var(--st-muted);margin:.7rem 0 0">Place <code>feed.xml</code> and <code>sitemap.xml</code> next to <code>index.html</code> on your host.</p>` : `<p style="font-size:.78rem;color:var(--st-muted);margin:.7rem 0 0">RSS and the sitemap need your public site address. Add it in <a href="#/studio/settings?tab=footer">Settings, Footer and SEO</a>.</p>`}</div>
-      <div class="st-card" style="border-color:color-mix(in oklab, var(--st-err) 40%, var(--st-rule))"><h3 style="color:var(--st-err)">Clear local data</h3><p style="font-size:.84rem;color:var(--st-ink2);margin:0 0 .8rem">Deletes every entry, image, setting and theme choice stored by this site in this browser, then reloads with the starter content. Export a backup first.</p><button class="st-btn danger" type="button" id="dp-clear">${ICO.trash} Clear all local data…</button></div>
+      ${App.mode !== 'local' ? '' : `<div class="st-card" style="border-color:color-mix(in oklab, var(--st-err) 40%, var(--st-rule))"><h3 style="color:var(--st-err)">Clear local data</h3><p style="font-size:.84rem;color:var(--st-ink2);margin:0 0 .8rem">Deletes every entry, image, setting and theme choice stored by this site in this browser, then reloads with the starter content. Export a backup first.</p><button class="st-btn danger" type="button" id="dp-clear">${ICO.trash} Clear all local data…</button></div>`}
       <p style="font-size:.76rem;color:var(--st-muted);margin-top:1rem">Schema version ${App.meta.schemaVersion}. Storage: ${App.storage === 'idb' ? 'IndexedDB' : 'memory only'}.</p></div>`;
     main.onclick = async (e) => { const b = e.target.closest('button'); if (!b) return;
       if (b.id === 'dp-snap') { b.disabled = true; const info = $('#dp-snap-info'); info.textContent = 'Building…'; try { const r = await Exporter.snapshot({ includeExamples: $('#dp-ex').checked }); info.textContent = `index.html downloaded: ${r.items} entries, ${r.media} files, ${fmtBytes(r.size)}.`; UI.toast('Snapshot exported'); } catch (err) { info.textContent = ''; UI.toast('Snapshot failed: ' + err.message, 'err'); } b.disabled = false; }
@@ -3969,7 +4518,128 @@ const Studio = {
         if (v !== 'DELETE') { if (v !== null) UI.toast('Nothing was deleted. Type DELETE exactly to confirm.', 'err'); return; }
         for (const st of STORES) await LocalBackend.clear(st); try { Object.keys(localStorage).filter((k) => k.startsWith('harshaad.')).forEach((k) => localStorage.removeItem(k)); } catch (_) {}
         Router.replace('#/studio'); location.reload(); } };
-  }
+  },
+  /* ---------- Sign-in (hosted mode) ---------- */
+  loginPage(r) {
+    Studio.teardown(); App.inStudio = true; document.title = 'Sign in — ' + App.settings.name; loadFonts(['Inter', 'Cormorant Garamond']);
+    const signedInNotAdmin = Auth.session && !Auth.admin;
+    $('#app').innerHTML = `<div class="studio st-login"><main class="st-login-card" aria-labelledby="li-h">
+      <h1 id="li-h">Studio</h1><p style="color:var(--st-ink2);margin:0 0 1.4rem;font-size:.86rem">${signedInNotAdmin ? `Signed in as ${esc(Auth.email())}, but this account cannot edit the site.` : `Sign in to edit ${esc(App.settings.name)}.`}</p>
+      ${signedInNotAdmin ? `<p style="font-size:.82rem;color:var(--st-ink2)">If this is your account, run the setup SQL again with this email address so it is added to the site admins.</p><button class="st-btn" type="button" id="li-out">Sign out</button>` : `
+      <form id="li-form" novalidate><label class="st-field"><span>Email</span><input class="st-in" type="email" name="email" autocomplete="username" required value="${esc(Prefs.get('lastEmail', ''))}"></label>
+      <label class="st-field"><span>Password</span><input class="st-in" type="password" name="password" autocomplete="current-password" required></label>
+      <p class="st-err" id="li-err" role="alert"></p><button class="st-btn pri" type="submit">Sign in</button></form>
+      <div class="st-row" style="justify-content:space-between;margin-top:1rem"><button class="st-btn sm ghost" type="button" id="li-forgot">Forgot password?</button><a class="st-btn sm ghost" href="#/">Back to the site</a></div>`}
+      ${App.remoteError ? `<p class="st-err">${esc(App.remoteError)}</p>` : ''}</main></div>`;
+    const out = $('#li-out'); if (out) out.onclick = () => this.signOut();
+    const form = $('#li-form'); if (!form) return;
+    const err = $('#li-err'); setTimeout(() => (form.email.value ? form.password : form.email).focus(), 50);
+    form.onsubmit = async (e) => {
+      e.preventDefault(); err.textContent = ''; const btn = $('button[type=submit]', form); btn.disabled = true; btn.textContent = 'Signing in…';
+      try {
+        const ok = await Auth.signIn(form.email.value, form.password.value); Prefs.set('lastEmail', form.email.value.trim());
+        if (!ok) { this.loginPage(r); return; }
+        await Data.reloadRemote(); App.inStudio = false; UI.toast('Signed in'); Router.render();
+      } catch (ex) { err.textContent = ex.message; btn.disabled = false; btn.textContent = 'Sign in'; }
+    };
+    $('#li-forgot').onclick = async () => {
+      const email = form.email.value.trim(); if (!email) { err.textContent = 'Enter your email address first.'; form.email.focus(); return; }
+      try { await Auth.recover(email); UI.toast('If that address has an account, a reset link is on its way.'); } catch (ex) { err.textContent = ex.message; }
+    };
+  },
+  async signOut() { await Auth.signOut(); try { await Data.reloadRemote(); } catch (_) {} App.inStudio = true; UI.toast('Signed out'); Router.go('#/'); },
+
+  /* ---------- Account (hosted mode) ---------- */
+  accountPage(main, q) {
+    const reset = q.reset === '1';
+    main.innerHTML = this.top('Account and password') + `<div class="st-page narrow">
+      ${reset ? `<div class="st-note info"><b>Set a new password.</b> You followed a password-reset link, so you are signed in. Choose a new password below.</div>` : ''}
+      <div class="st-card" style="margin-bottom:1rem"><h3>Signed in</h3><p style="font-size:.86rem;margin:0 0 .8rem">${esc(Auth.email() || 'Site admin')}</p><button class="st-btn" type="button" data-st="signout">Sign out</button></div>
+      <form class="st-card" id="pw-form" style="margin-bottom:1rem" novalidate><h3>${reset ? 'New password' : 'Change password'}</h3>
+        <label class="st-field"><span>New password</span><input class="st-in" type="password" name="pw" autocomplete="new-password" minlength="8" required><small>At least 8 characters. A short phrase is easier to remember and harder to guess.</small></label>
+        <label class="st-field"><span>Repeat new password</span><input class="st-in" type="password" name="pw2" autocomplete="new-password" required></label>
+        <p class="st-err" id="pw-err" role="alert"></p><button class="st-btn pri" type="submit">Change password</button></form>
+      <div class="st-card" style="margin-bottom:1rem"><h3>Connection</h3><p style="font-size:.84rem;color:var(--st-ink2);margin:0 0 .8rem">Supabase project <code>${esc(Supa.url.replace(/^https:\/\//, ''))}</code>. ${SiteConfig.source === 'browser' ? 'This browser was switched to the live site from a local copy.' : 'The connection is built into this site file.'}</p>
+        <div class="st-row"><button class="st-btn" type="button" id="ac-file">${ICO.download} Download the site file</button>${SiteConfig.source === 'browser' ? '<button class="st-btn ghost" type="button" id="ac-disc">Disconnect this browser</button>' : ''}</div>
+        <p style="font-size:.76rem;color:var(--st-muted);margin:.7rem 0 0">The site file is the <code>index.html</code> to put on your host. You only need it again if the site’s design or code changes; content edits go live without it.</p></div>
+      <div class="st-card"><h3>Who can edit</h3><p style="font-size:.84rem;color:var(--st-ink2);margin:0">Only accounts listed in the <code>site_admins</code> table can save changes; the database refuses everyone else, whatever they do in their browser. For extra safety, turn off “Allow new users to sign up” in Supabase under Authentication, Sign In / Providers.</p></div></div>`;
+    const f = $('#pw-form', main), err = $('#pw-err', main);
+    f.onsubmit = async (e) => { e.preventDefault(); err.textContent = '';
+      if (f.pw.value.length < 8) { err.textContent = 'Use at least 8 characters.'; return; } if (f.pw.value !== f.pw2.value) { err.textContent = 'The two passwords do not match.'; return; }
+      const b = $('button[type=submit]', f); b.disabled = true;
+      try { await Auth.changePassword(f.pw.value); f.reset(); UI.toast('Password changed'); if (reset) Router.replace('#/studio/account'); } catch (ex) { err.textContent = ex.message; } b.disabled = false; };
+    $('#ac-file', main).onclick = async () => { try { const r = await Exporter.siteFile({ supabaseUrl: Supa.url, anonKey: Supa.key }); UI.toast(`Site file downloaded (${fmtBytes(r.size)})`); } catch (ex) { UI.toast(ex.message, 'err'); } };
+    const disc = $('#ac-disc', main); if (disc) disc.onclick = async () => { if (await UI.confirm('Disconnect this browser?', 'This copy goes back to local editing mode with the content stored in this browser. The live site is not affected.', { okLabel: 'Disconnect' })) { try { localStorage.removeItem('harshaad.siteConfig'); } catch (_) {} Router.replace('#/studio'); location.reload(); } };
+    if (reset) setTimeout(() => f.pw.focus(), 50);
+  },
+
+  /* ---------- Go live: guided Supabase setup (local mode) ---------- */
+  goLivePage(main) {
+    const g = Object.assign({ url: '', key: '', email: '', connected: false, uploaded: false }, Prefs.get('golive', {}));
+    if (g.url && g.key) { Supa.setup({ supabaseUrl: g.url, anonKey: g.key }); if (!Auth.session) Auth.load(); }
+    const saveG = () => Prefs.set('golive', g);
+    const draw = () => {
+      main.innerHTML = this.top('Go live: login and publishing') + `<div class="st-page narrow">
+        <p class="st-sub">Right now everything lives in this browser. Connecting a free Supabase project gives you a real email and password login, lets you change your password, and makes every save update the public website straight away. It takes about ten minutes, once.</p>
+        <div class="steps">
+          <section class="step"><h3>Create a free Supabase project</h3><p>Sign up at Supabase and create a new project. Any name and region work; note the database password it asks for somewhere safe (you will not need it here).</p><a class="st-btn sm" href="https://supabase.com/dashboard/new" target="_blank" rel="noopener">${ICO.ext} Open Supabase</a></section>
+          <section class="step"><h3>Create your login</h3><ol><li>In the project, open <b>Authentication</b>, then <b>Users</b>, then <b>Add user → Create new user</b>.</li><li>Enter the email and password you want to sign in with, and tick <b>Auto Confirm User</b>.</li><li>Recommended: under <b>Authentication → Sign In / Providers</b>, turn off <b>Allow new users to sign up</b>.</li></ol></section>
+          <section class="step"><h3>Run the setup script</h3><p>This creates the tables, the security rules that let only you edit, and a storage bucket for images. Enter the email from the previous step so the script makes that account the admin.</p>
+            <label class="st-field"><span>Your login email</span><input class="st-in" type="email" id="gl-email" value="${esc(g.email)}" placeholder="you@example.com"></label>
+            <div class="sql" id="gl-sql"></div><div class="st-row"><button class="st-btn sm" type="button" id="gl-copy">${ICO.copy} Copy script</button><span style="font-size:.78rem;color:var(--st-muted)">Paste it into <b>SQL Editor → New query</b> and press <b>Run</b>. The last line should show your email.</span></div></section>
+          <section class="step ${g.connected ? 'done' : ''}"><h3>Connect and sign in</h3><p>In Supabase, open <b>Project Settings → API Keys</b> (or <b>Connect</b>). Copy the <b>Project URL</b> and the <b>anon public</b> (or publishable) key. These are meant to be public; the security rules from step 3 protect your content.</p>
+            <label class="st-field"><span>Project URL</span><input class="st-in mono" id="gl-url" value="${esc(g.url)}" placeholder="https://abcd1234.supabase.co"></label>
+            <label class="st-field"><span>Anon public key</span><input class="st-in mono" id="gl-key" value="${esc(g.key)}" placeholder="eyJhbGciOi… or sb_publishable_…"></label>
+            <label class="st-field"><span>Your password (from step 2)</span><input class="st-in" type="password" id="gl-pw" autocomplete="current-password"></label>
+            <p class="st-err" id="gl-err" role="alert"></p><button class="st-btn pri" type="button" id="gl-connect">${g.connected ? 'Connected. Reconnect' : 'Connect and sign in'}</button></section>
+          <section class="step ${g.uploaded ? 'done' : ''}"><h3>Upload your content</h3><p>Copies every entry, draft, image, setting and theme choice from this browser to Supabase. Entries already there with the same name are overwritten.</p>
+            <p id="gl-prog" style="font-size:.8rem;color:var(--st-muted)">${g.uploaded ? esc(g.uploadedMsg || 'Uploaded.') : ''}</p><button class="st-btn pri" type="button" id="gl-up" ${g.connected ? '' : 'disabled'}>${ICO.upload} Upload content</button></section>
+          <section class="step"><h3>Put the site online</h3><ol>
+            <li>Download the site file below. It is your <code>index.html</code> with the connection built in.</li>
+            <li>Upload it to any static host, for example GitHub Pages (a repository with <code>index.html</code> in it, then Settings → Pages) or Netlify Drop (drag the file onto the page).</li>
+            <li>In Supabase, open <b>Authentication → URL Configuration</b> and set the <b>Site URL</b> to your site’s address, so password-reset emails link back to it.</li>
+            <li>From then on, open <code>your-address/#/studio</code>, sign in, and edit. Changes appear for everyone as soon as you save or publish.</li></ol>
+            <div class="st-row"><button class="st-btn acc" type="button" id="gl-file" ${g.connected ? '' : 'disabled'}>${ICO.download} Download site file</button><button class="st-btn" type="button" id="gl-switch" ${g.connected && g.uploaded ? '' : 'disabled'}>Edit the live site from this browser now</button></div></section>
+        </div></div>`;
+      const sql = () => { $('#gl-sql', main).textContent = setupSQL($('#gl-email', main).value || 'YOUR-EMAIL@example.com'); };
+      sql();
+      $('#gl-email', main).oninput = (e) => { g.email = e.target.value.trim(); saveG(); sql(); };
+      $('#gl-copy', main).onclick = async () => { if (!g.email) { UI.toast('Enter your login email first.', 'err'); return; } UI.toast((await copyText(setupSQL(g.email))) ? 'Script copied' : 'Copy failed. Select the script and copy it manually.'); };
+      $('#gl-connect', main).onclick = async () => {
+        const err = $('#gl-err', main); err.textContent = ''; g.url = $('#gl-url', main).value.trim().replace(/\/+$/, ''); g.key = $('#gl-key', main).value.trim(); saveG();
+        if (!/^https:\/\/[\w.-]+$/.test(g.url)) { err.textContent = 'The project URL should look like https://abcd1234.supabase.co'; return; }
+        if (g.key.length < 20) { err.textContent = 'Paste the full anon public key.'; return; }
+        if (!g.email) { err.textContent = 'Enter your login email in step 3.'; return; }
+        const b = $('#gl-connect', main); b.disabled = true; b.textContent = 'Connecting…';
+        Supa.setup({ supabaseUrl: g.url, anonKey: g.key });
+        try {
+          try { await Supa.req('/rest/v1/site_records?select=id&limit=1', {}, { useSession: false }); }
+          catch (ex) { throw new Error(ex.status === 404 || /site_records|schema cache|does not exist/i.test(ex.message) ? 'Connected, but the tables are missing. Run the script from step 3, then try again.' : ex.status === 401 ? 'Supabase rejected the key. Check that you copied the anon public key in full.' : ex.message); }
+          const admin = await Auth.signIn(g.email, $('#gl-pw', main).value);
+          if (!admin) throw new Error('Signed in, but this account is not an admin yet. Run the script from step 3 with exactly this email, then try again.');
+          g.connected = true; saveG(); UI.toast('Connected to Supabase'); draw();
+        } catch (ex) { err.textContent = ex.message; b.disabled = false; b.textContent = 'Connect and sign in'; }
+      };
+      $('#gl-up', main).onclick = async () => {
+        const prog = $('#gl-prog', main); const b = $('#gl-up', main); b.disabled = true; Supa.setup({ supabaseUrl: g.url, anonKey: g.key });
+        try {
+          if (!Auth.session) throw new Error('Connect and sign in first (step 4).');
+          const media = [...App.media.values()]; let n = 0; const total = media.length + App.items.length + 3;
+          const tick = (what) => { n++; prog.textContent = `Uploading ${what}… ${n} of ${total}`; };
+          for (const m of media) { tick('media'); const rec = Object.assign({}, m); if (!rec.blob) continue; await RemoteBackend.put('media', rec); }
+          for (const it of App.items) { tick('entries'); await RemoteBackend.put('items', it); }
+          tick('settings'); await RemoteBackend.put('kv', { key: 'settings', value: App.settings });
+          tick('theme'); await RemoteBackend.put('kv', { key: 'theme', value: App.theme });
+          tick('details'); await RemoteBackend.put('kv', Object.assign({}, App.meta, { key: 'meta' }));
+          for (const d of await LocalBackend.getAll('drafts')) await RemoteBackend.put('drafts', d);
+          g.uploaded = true; g.uploadedMsg = `Uploaded ${App.items.length} entries and ${media.length} files on ${fmtDate(nowISO(), 'time')}.`; saveG(); prog.textContent = g.uploadedMsg; UI.toast('Content uploaded'); draw();
+        } catch (ex) { prog.textContent = ''; UI.toast('Upload stopped: ' + ex.message, 'err'); b.disabled = false; }
+      };
+      $('#gl-file', main).onclick = async () => { try { const r = await Exporter.siteFile({ supabaseUrl: g.url, anonKey: g.key }); UI.toast(`Site file downloaded (${fmtBytes(r.size)})`); } catch (ex) { UI.toast(ex.message, 'err'); } };
+      $('#gl-switch', main).onclick = async () => { if (await UI.confirm('Edit the live site from this browser?', 'This copy will read and write your Supabase project instead of this browser’s storage. Your local content stays stored here and comes back if you disconnect later.', { okLabel: 'Switch to live' })) { Prefs.set('siteConfig', { supabaseUrl: g.url, anonKey: g.key }); Router.replace('#/studio'); location.reload(); } };
+    };
+    draw();
+  },
 };
 
 /* =====================================================================
@@ -4091,10 +4761,10 @@ const Exporter = {
     return [...ids].filter((id) => App.media.has(id));
   },
   async mediaPayload(ids) {
-    const out = []; for (const id of ids) { const m = App.media.get(id); if (!m || !m.blob) continue; const { blob, ...rest } = m; out.push({ ...rest, data: await blobToDataURL(blob) }); } return out;
+    const out = []; for (const id of ids) { const m = App.media.get(id); if (!m) continue; let blob = null; try { blob = await Media.blob(id); } catch (e) { console.warn(e); } if (!blob) continue; const { blob: _b, url: _u, path: _p, ...rest } = m; out.push({ ...rest, data: await blobToDataURL(blob) }); } return out;
   },
   async backup() {
-    const items = JSON.parse(JSON.stringify(App.items)); const drafts = await LocalBackend.getAll('drafts');
+    const items = JSON.parse(JSON.stringify(App.items)); let drafts = []; try { drafts = await DB.getAll('drafts'); } catch (_) {}
     const payload = { format: 'harshaad-site-backup', schemaVersion: SCHEMA_VERSION, appVersion: APP_VERSION, exportedAt: nowISO(), settings: App.settings, theme: App.theme, items, drafts, media: await this.mediaPayload([...App.media.keys()]) };
     const json = JSON.stringify(payload); download(json, `harshaad-site-backup-${fmtDate(nowISO(), 'iso')}.json`, 'application/json');
     App.meta.lastBackup = nowISO(); await Data.saveMeta(); UI.toast(`Backup exported (${fmtBytes(json.length)})`);
@@ -4107,15 +4777,17 @@ const Exporter = {
       actions: [{ label: 'Cancel', value: null }, { label: 'Merge', value: 'merge' }, { label: 'Replace everything', primary: true, danger: true, value: 'replace' }] });
     if (!choice) return;
     try {
-      if (choice === 'replace') { for (const s of STORES) await LocalBackend.clear(s); App.items = []; App.media = new Map(); App.urls.forEach((u) => URL.revokeObjectURL(u)); App.urls = new Map(); }
-      for (const m of p.media || []) { if (choice === 'merge' && App.media.has(m.id)) continue; const rec = { ...m, blob: await dataURLToBlob(m.data) }; delete rec.data; await LocalBackend.put('media', rec); App.media.set(rec.id, rec); }
-      for (const raw of p.items) { const it = normalizeItem(raw); const cur = Data.byId(it.id); if (choice === 'merge' && cur && cur.updated >= it.updated) continue; await LocalBackend.put('items', it); const i = App.items.findIndex((x) => x.id === it.id); if (i > -1) App.items[i] = it; else App.items.push(it); }
-      for (const d of p.drafts || []) if (choice === 'replace') await LocalBackend.put('drafts', d);
+      if (choice === 'replace') { for (const s of STORES) await DB.clear(s); App.items = []; App.media = new Map(); App.urls.forEach((u) => URL.revokeObjectURL(u)); App.urls = new Map(); }
+      for (const m of p.media || []) { if (choice === 'merge' && App.media.has(m.id)) continue; const rec = { ...m, blob: await dataURLToBlob(m.data) }; delete rec.data; const saved = (await DB.put('media', rec)) || rec; App.media.set(saved.id, saved); }
+      for (const raw of p.items) { const it = normalizeItem(raw); const cur = Data.byId(it.id); if (choice === 'merge' && cur && cur.updated >= it.updated) continue; await DB.put('items', it); const i = App.items.findIndex((x) => x.id === it.id); if (i > -1) App.items[i] = it; else App.items.push(it); }
+      for (const d of p.drafts || []) if (choice === 'replace') await DB.put('drafts', d);
       if (choice === 'replace') { App.settings = Object.assign(seedData().settings, p.settings || {}); App.theme = Object.assign(defaultThemePrefs(), p.theme || {}); await Data.saveSettings(); await Data.saveTheme(); App.meta = { key: 'meta', schemaVersion: SCHEMA_VERSION, created: nowISO(), lastBackup: p.exportedAt || null }; await Data.saveMeta(); }
       Theme.apply(); UI.toast(choice === 'replace' ? 'Backup restored' : 'Backup merged'); Studio.buildShell(); Router.go('#/studio');
     } catch (e) { UI.toast('Restore failed part-way: ' + e.message + '. Your previous backup file is unchanged.', 'err'); }
   },
-  async snapshot({ includeExamples = true } = {}) {
+  async snapshot({ includeExamples = true } = {}) { const r = await this.buildFile({ includeExamples, config: null }); download(r.html, 'index.html', 'text/html'); return r; },
+  async siteFile(config) { const r = await this.buildFile({ includeExamples: true, config: { supabaseUrl: config.supabaseUrl, anonKey: config.anonKey } }); download(r.html, 'index.html', 'text/html'); return r; },
+  async buildFile({ includeExamples = true, config = null } = {}) {
     const items = App.items.filter((i) => (isPublic(i) || (i.type === 'page' && i.status !== 'archived')) && (includeExamples || !i.isExample)).map((i) => JSON.parse(JSON.stringify(i)));
     const settings = JSON.parse(JSON.stringify(App.settings)); const theme = JSON.parse(JSON.stringify(App.theme));
     if (settings.home.lead && !items.some((i) => i.id === settings.home.lead)) settings.home.lead = null;
@@ -4125,22 +4797,23 @@ const Exporter = {
     let html = PRISTINE_HTML; const a = html.indexOf(SNAP_OPEN); const b = a > -1 ? html.indexOf(SNAP_CLOSE, a) : -1;
     if (a < 0 || b < 0) throw new Error('The page template could not be located in this file.');
     html = html.slice(0, a + SNAP_OPEN.length) + json + html.slice(b);
+    const ca = html.indexOf(CFG_OPEN), cb = ca > -1 ? html.indexOf(SNAP_CLOSE, ca) : -1;
+    if (ca > -1 && cb > -1) html = html.slice(0, ca + CFG_OPEN.length) + (config ? JSON.stringify(config).replace(/</g, '\\u003c') : 'null') + html.slice(cb);
     const t = themeById(theme.id); const mode = theme.modes[t.id] || t.defaultMode;
     html = html.replace(/<html lang="en"[^>]*>/, `<html lang="en" data-theme="${t.id}" data-mode="${mode === 'dark' ? 'dark' : 'light'}">`)
       .replace(/<title>[\s\S]*?<\/title>/, `<title>${esc(settings.siteTitle || settings.name)}</title>`)
       .replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${esc(settings.seo.description || settings.tagline)}">`)
       .replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${esc(settings.siteTitle || settings.name)}">`)
       .replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${esc(settings.tagline)}">`);
-    download(html, 'index.html', 'text/html');
-    return { items: items.length, media: media.length, size: html.length };
+    return { html, items: items.length, media: media.length, size: html.length };
   },
   async articleHTML(it) {
     const r = Render.blocks(it.body); const tmp = document.createElement('div'); tmp.innerHTML = r.html + Render.footnotes(r.notes);
-    for (const img of $$('img[data-media]', tmp)) { const m = App.media.get(img.dataset.media); if (m && m.blob) img.src = await blobToDataURL(m.blob); img.removeAttribute('data-media'); }
+    for (const img of $$('img[data-media]', tmp)) { const m = App.media.get(img.dataset.media); if (m) { try { const bl = await Media.blob(m.id); if (bl) img.src = await blobToDataURL(bl); } catch (_) {} } img.removeAttribute('data-media'); }
     $$('.copy-code', tmp).forEach((b) => b.remove()); $$('.sidenote', tmp).forEach((s) => s.remove());
     $$('pre code[data-raw]', tmp).forEach((c) => { c.textContent = c.dataset.raw; c.removeAttribute('data-raw'); });
     $$('a[data-scroll]', tmp).forEach((a) => a.removeAttribute('data-scroll'));
-    const cover = it.cover && App.media.get(it.cover) ? `<figure><img src="${await blobToDataURL(App.media.get(it.cover).blob)}" alt="${esc(App.media.get(it.cover).alt || '')}"></figure>` : '';
+    let cover = ''; if (it.cover && App.media.get(it.cover)) { try { cover = `<figure><img src="${await blobToDataURL(await Media.blob(it.cover))}" alt="${esc(App.media.get(it.cover).alt || '')}"></figure>`; } catch (_) {} }
     const S = 'script';
     return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -4158,7 +4831,7 @@ ${tmp.innerHTML}</article></main>
     if (!imgs.length) { download(MD.fromItem(it), (it.slug || slugify(it.title)) + '.md', 'text/markdown'); return; }
     const files = []; const names = new Map(); imgs.forEach((b, i) => { const m = App.media.get(b.media); const ext = (m.type.split('/')[1] || 'img').replace('jpeg', 'jpg').replace('svg+xml', 'svg'); names.set(b.media, `images/${it.slug || 'article'}-${i + 1}.${ext}`); });
     files.push({ name: (it.slug || 'article') + '.md', data: new TextEncoder().encode(MD.fromItem(it, (id) => names.get(id) || id)) });
-    for (const [id, name] of names) files.push({ name, data: new Uint8Array(await App.media.get(id).blob.arrayBuffer()) });
+    for (const [id, name] of names) files.push({ name, data: new Uint8Array(await (await Media.blob(id)).arrayBuffer()) });
     download(Zip.build(files), (it.slug || 'article') + '.zip', 'application/zip');
   },
   async markdownZip() {
@@ -4166,7 +4839,7 @@ ${tmp.innerHTML}</article></main>
     const files = []; const names = new Map(); let n = 0;
     for (const it of list) for (const b of it.body) if (b.type === 'image' && b.media && App.media.get(b.media) && !names.has(b.media)) { const m = App.media.get(b.media); names.set(b.media, `images/${++n}-${slugify(m.name.replace(/\.\w+$/, ''))}.${(m.type.split('/')[1] || 'img').replace('jpeg', 'jpg').replace('svg+xml', 'svg')}`); }
     for (const it of list) files.push({ name: `${it.type === 'post' ? 'writings' : 'notes'}/${it.slug || it.id}.md`, data: new TextEncoder().encode(MD.fromItem(it, (id) => '../' + (names.get(id) || id))) });
-    for (const [id, name] of names) files.push({ name, data: new Uint8Array(await App.media.get(id).blob.arrayBuffer()) });
+    for (const [id, name] of names) files.push({ name, data: new Uint8Array(await (await Media.blob(id)).arrayBuffer()) });
     download(Zip.build(files), `harshaad-writings-${fmtDate(nowISO(), 'iso')}.zip`, 'application/zip'); UI.toast(`${list.length} documents exported`);
   },
   xml(s) { return String(s || '').replace(/[<>&'"]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c])); },
@@ -4209,7 +4882,9 @@ async function boot() {
   await Data.init();
   if (App.mode === 'snapshot') Object.assign(App.theme.modes, Prefs.get('snapMode', {}));
   Theme.apply(); Keys.init();
-  if (!location.hash || !location.hash.startsWith('#/')) Router.replace('#/');
+  if (Data.linkType === 'recovery') Router.replace('#/studio/account?reset=1');
+  else if (Data.linkType) Router.replace('#/studio');
+  else if (!location.hash || !location.hash.startsWith('#/')) Router.replace('#/');
   await Router.render();
 }
 boot().catch((err) => {
